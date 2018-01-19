@@ -1,17 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
 
 import ErrorBoundary from './error-boundary';
-import Chores from './chores';
-import { auth, googleProvider } from './firebase';
+import Main from './main';
+import { auth, googleProvider, db } from './firebase';
 
 class App extends React.Component {
   state = {
     user: null,
   };
 
-  static childContextType = {
+  static childContextTypes = {
     user: PropTypes.object,
   };
 
@@ -22,7 +21,18 @@ class App extends React.Component {
   componentDidMount() {
     this.unsubscribe = auth.onAuthStateChanged(user => {
       if (user) {
-        this.setState({ user });
+        const { displayName, uid } = user;
+        const endpoint = `/families/${user.uid}`;
+        db.ref(endpoint).on('value', snapshot => {
+          const saved = snapshot.val();
+
+          if (saved) {
+            this.setState({ user: saved });
+          } else {
+            db.ref(endpoint).set({ displayName, uid });
+            this.setState({ user });
+          }
+        });
       } else {
         this.setState({ user: null });
       }
@@ -36,7 +46,7 @@ class App extends React.Component {
   render() {
     return (
       <ErrorBoundary message="Something is broken">
-        <Wrapper>{!!this.state.user ? <Chores /> : <Home />}</Wrapper>
+        {!!this.state.user ? <Main /> : <Home />}
       </ErrorBoundary>
     );
   }
@@ -56,10 +66,3 @@ const Home = () => (
     </button>
   </div>
 );
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100vh;
-`;
