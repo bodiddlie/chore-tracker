@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { Wrapper, Header } from './styles';
-import { auth } from './firebase';
+import { Wrapper } from './styles';
+import Header from './header';
 
 class Admin extends React.Component {
   state = {
@@ -38,10 +38,7 @@ class Admin extends React.Component {
 
     return (
       <Wrapper>
-        <Header>
-          <span>Admin</span>
-          <button onClick={() => auth.signOut()}>Sign Out</button>
-        </Header>
+        <Header total={4000.32} />
         <ProfileList>
           <AddEdit onSubmit={this.onSubmit}>
             <input
