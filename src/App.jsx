@@ -1,4 +1,5 @@
 import React from 'react';
+import { ThemeProvider } from 'styled-components';
 import PropTypes from 'prop-types';
 
 import ErrorBoundary from './error-boundary';
@@ -46,7 +47,17 @@ class App extends React.Component {
   render() {
     return (
       <ErrorBoundary message="Something is broken">
-        {!!this.state.user ? <Main /> : <Home />}
+        <ThemeProvider
+          theme={{
+            white: 'white',
+            blue: 'hsl(246, 83%, 50%)',
+            green: 'hsl(135, 75%, 40%)',
+            red: 'hsl(0, 50%, 50%)',
+            yellow: 'hsl(60, 60%, 50%)',
+          }}
+        >
+          {!!this.state.user ? <Main /> : <Home />}
+        </ThemeProvider>
       </ErrorBoundary>
     );
   }

@@ -49,22 +49,6 @@ class Main extends React.Component {
     this.ref.off();
   }
 
-  saveProfile = profile => {
-    if (profile.id === 'new') {
-      const newProfile = this.ref.push();
-      newProfile.set({
-        name: profile.name,
-        id: newProfile.key,
-      });
-    } else {
-      this.ref.child(profile.id).set(profile);
-    }
-  };
-
-  deleteProfile = profile => {
-    this.ref.child(profile.id).remove();
-  };
-
   selectProfile = profile => {
     localStorage.setItem(profileKey, JSON.stringify(profile));
     this.setState({ selectedProfile: profile });
@@ -91,11 +75,7 @@ class Main extends React.Component {
         {!!selectedProfile ? (
           <React.Fragment>
             {selectedProfile.id === 'admin' ? (
-              <Admin
-                profiles={profiles}
-                saveProfile={this.saveProfile}
-                deleteProfile={this.deleteProfile}
-              />
+              <Admin profiles={profiles} />
             ) : (
               <Wrapper>
                 <Header total={32.25} />
@@ -111,11 +91,7 @@ class Main extends React.Component {
                 selectProfile={this.selectProfile}
               />
             ) : (
-              <Admin
-                profiles={profiles}
-                saveProfile={this.saveProfile}
-                deleteProfile={this.deleteProfile}
-              />
+              <Admin profiles={profiles} />
             )}
           </React.Fragment>
         )}

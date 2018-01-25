@@ -14,7 +14,7 @@ export class User extends React.Component {
 export function withUser(Component) {
   return class extends React.Component {
     render() {
-      return <User>{user => <Component user={user} />}</User>;
+      return <User>{user => <Component user={user} {...this.props} />}</User>;
     }
   };
 }
