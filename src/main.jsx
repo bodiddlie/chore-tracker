@@ -8,6 +8,7 @@ import { objectToArray } from './util';
 import Admin from './admin';
 import ProfileSelect from './profile-select';
 import Header from './header';
+import ChildScreen from './child-screen';
 
 const profileKey = 'chore-tracker-profile-storage-key';
 
@@ -77,10 +78,7 @@ class Main extends React.Component {
             {selectedProfile.id === 'admin' ? (
               <Admin profiles={profiles} />
             ) : (
-              <Wrapper>
-                <Header total={32.25} />
-                <h1>Profile selected - {selectedProfile.name}!</h1>
-              </Wrapper>
+              <ChildScreen user={this.props.user} profile={selectedProfile} />
             )}
           </React.Fragment>
         ) : (
