@@ -1,11 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import format from 'date-fns/format';
+import { TiCancel } from 'react-icons/lib/ti';
 
 import { db } from './firebase';
 import { objectToArray } from './util';
 import { withUser } from './user';
 import Header from './header';
+import { Button } from './styles';
 
 const formatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -16,6 +18,7 @@ class ChildScreen extends React.Component {
   state = {
     chores: [],
     completedChores: [],
+    total: 0,
   };
 
   componentDidMount() {
@@ -32,7 +35,10 @@ class ChildScreen extends React.Component {
 
     this.completeRef.on('value', snapshot => {
       const completedChores = objectToArray(snapshot.val());
-      this.setState({ completedChores });
+      const total = completedChores.reduce((prev, cur) => {
+        return prev + cur.value;
+      }, 0);
+      this.setState({ completedChores, total });
     });
   }
 
@@ -45,6 +51,7 @@ class ChildScreen extends React.Component {
       choreId: chore.id,
       value: chore.value,
       completedDate: new Date(),
+      paid: false,
     };
     const update = {
       [`/families/${user.uid}/profiles/${
@@ -55,17 +62,21 @@ class ChildScreen extends React.Component {
     db.ref().update(update);
   };
 
-  render() {
-    const { chores, completedChores } = this.state;
+  handleDelete = chore => {
+    this.completeRef.child(chore.id).remove();
+  };
 
-    const total = this.state.completedChores.reduce(
-      (sum, cur) => sum + cur.value,
-      0
-    );
+  render() {
+    const { profile } = this.props;
+    const { chores, completedChores, total } = this.state;
 
     return (
       <Grid>
-        <Header total={total} />
+        <Header>
+          <HeaderText>
+            {profile.name} - Earned {formatter.format(total)}
+          </HeaderText>
+        </Header>
         <ChoreList>
           {chores.map(c => (
             <Chore key={c.id}>
@@ -73,13 +84,19 @@ class ChildScreen extends React.Component {
                 {c.name} - {formatter.format(c.value)}
               </Details>
               <Completed>
-                {completedChores
-                  .filter(cc => c.id === cc.choreId)
-                  .map(ch => (
-                    <Mark key={ch.id}>{format(ch.completedDate, 'MM/DD')}</Mark>
-                  ))}
+                {completedChores.filter(cc => c.id === cc.choreId).map(ch => (
+                  <Mark key={ch.id}>
+                    {format(ch.completedDate || new Date(), 'MM/DD')}{' '}
+                    <MarkButton onClick={() => this.handleDelete(ch)}>
+                      <TiCancel />
+                    </MarkButton>
+                  </Mark>
+                ))}
               </Completed>
-              <CompleteButton onClick={() => this.handleComplete(c)}>
+              <CompleteButton
+                onClick={() => this.handleComplete(c)}
+                color="green"
+              >
                 +
               </CompleteButton>
             </Chore>
@@ -96,6 +113,10 @@ const Grid = styled.div`
   display: grid;
 `;
 
+const HeaderText = styled.span`
+  color: white;
+`;
+
 const ChoreList = styled.div`
   display: grid;
 `;
@@ -103,22 +124,20 @@ const ChoreList = styled.div`
 const Chore = styled.div`
   display: grid;
   grid-template-columns: 1fr 50px;
-  grid-template-rows: auto;
-  /* prettier-ignore */
+  grid-template-rows: 1rem 1.5rem;
   grid-template-areas:
-    "details button"
-    "completed button";
+    'details button'
+    'completed button';
   grid-gap: 0.5rem;
   border-bottom: 1px solid black;
+  padding: 0.5rem;
 `;
 
 const Details = styled.div`
   grid-area: details;
 `;
 
-const CompleteButton = styled.button.attrs({
-  type: 'button',
-})`
+const CompleteButton = Button.extend`
   grid-area: button;
 `;
 
@@ -128,8 +147,30 @@ const Completed = styled.div`
 `;
 
 const Mark = styled.span`
-  background: blue;
+  display: flex;
+  align-items: center;
   color: white;
-  padding: 0.5rem;
+  padding: 0.3rem;
   margin-right: 0.25rem;
+  font-size: 0.8rem;
+  background: ${props => props.theme.gray};
+  border-radius: 10px;
+`;
+
+const MarkButton = styled.button.attrs({
+  type: 'button',
+})`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  border: none;
+  background: transparent;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: white;
+
+  &:hover {
+    color: red;
+  }
 `;

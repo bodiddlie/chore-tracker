@@ -1,13 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Wrapper } from './styles';
 import { withUser } from './user';
 import { db } from './firebase';
 import { objectToArray } from './util';
 import Admin from './admin';
 import ProfileSelect from './profile-select';
-import Header from './header';
 import ChildScreen from './child-screen';
 
 const profileKey = 'chore-tracker-profile-storage-key';

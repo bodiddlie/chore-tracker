@@ -54,6 +54,7 @@ class App extends React.Component {
             green: 'hsl(135, 75%, 40%)',
             red: 'hsl(0, 50%, 50%)',
             yellow: 'hsl(60, 60%, 50%)',
+            gray: '#676767',
           }}
         >
           {!!this.state.user ? <Main /> : <Home />}

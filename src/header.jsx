@@ -26,7 +26,7 @@ Header.contextTypes = {
 export default Header;
 
 export const Wrapper = styled.div`
-  background: green;
+  background: ${props => props.theme.gray};
   display: flex;
   justify-content: space-between;
   padding: 1rem;
