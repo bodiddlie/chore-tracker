@@ -27,6 +27,7 @@ class ChildScreen extends React.Component {
     this.completeRef = db.ref(
       `/families/${user.uid}/profiles/${profile.id}/completedChores`
     );
+    this.adminCompleteRef = db.ref(`/families/${user.uid}/completedChores`);
 
     this.choreRef.on('value', snapshot => {
       const chores = objectToArray(snapshot.val());
@@ -42,6 +43,12 @@ class ChildScreen extends React.Component {
     });
   }
 
+  componentWillUnmount() {
+    this.choreRef.off();
+    this.completeRef.off();
+    this.adminCompleteRef.off();
+  }
+
   handleComplete = chore => {
     const { user, profile } = this.props;
 
@@ -51,12 +58,14 @@ class ChildScreen extends React.Component {
       choreId: chore.id,
       value: chore.value,
       completedDate: new Date(),
+      completedBy: profile.id,
       paid: false,
     };
     const update = {
       [`/families/${user.uid}/profiles/${
         profile.id
       }/completedChores/${key}`]: newChore,
+      [`/families/${user.uid}/completedChores/${key}`]: newChore,
     };
 
     db.ref().update(update);
@@ -64,6 +73,7 @@ class ChildScreen extends React.Component {
 
   handleDelete = chore => {
     this.completeRef.child(chore.id).remove();
+    this.adminCompleteRef.child(chore.id).remove();
   };
 
   render() {

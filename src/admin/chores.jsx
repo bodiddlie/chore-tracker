@@ -32,6 +32,7 @@ class Chores extends React.Component {
         <Grid>
           <Heading>Name</Heading>
           <Heading>Value</Heading>
+          <Heading>Last Completed By</Heading>
           <Heading>Actions</Heading>
         </Grid>
         {chores.map(c => <Chore key={c.id} chore={c} />)}
@@ -44,7 +45,7 @@ export default withUser(Chores);
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr) 80px;
+  grid-template-columns: repeat(3, 1fr) 80px;
   grid-column-gap: 1rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.5);
   margin-bottom: 0.25rem;

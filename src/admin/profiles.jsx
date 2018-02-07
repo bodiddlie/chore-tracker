@@ -12,6 +12,12 @@ import { db } from '../firebase';
 import { withUser } from '../user';
 import { TextBox } from '../shared';
 import { Button, TextButton, TextInput } from '../styles';
+import { objectToArray } from '../util';
+
+const formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
 
 class ProfileList extends React.Component {
   state = {
@@ -98,15 +104,26 @@ class Profile extends React.Component {
   state = {
     editing: false,
     local: this.props.profile.name,
+    total: 0,
   };
 
   componentDidMount() {
     const { user, profile } = this.props;
     this.ref = db.ref(`/families/${user.uid}/profiles/${profile.id}`);
+    this.totalRef = this.ref.child('completedChores');
+
+    this.totalRef.on('value', snapshot => {
+      const chores = objectToArray(snapshot.val());
+      const total = chores.reduce((prev, cur) => {
+        return prev + cur.value;
+      }, 0);
+      this.setState({ total });
+    });
   }
 
   componentWillUnmount() {
     this.ref.off();
+    this.totalRef.off();
   }
 
   handleChange = ({ target }) => {
@@ -150,7 +167,7 @@ class Profile extends React.Component {
 
   render() {
     const { profile: { name } } = this.props;
-    const { editing, local } = this.state;
+    const { editing, local, total } = this.state;
 
     return (
       <Container onSubmit={this.handleSave}>
@@ -172,7 +189,9 @@ class Profile extends React.Component {
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <TextButton onClick={this.handleEdit}>{name}</TextButton>
+            <TextButton onClick={this.handleEdit}>
+              {name} - {formatter.format(total)}
+            </TextButton>
             <Button onClick={this.handleEdit} title="Edit">
               <TiPencil />
             </Button>

@@ -13,17 +13,36 @@ class Chore extends React.Component {
     localName: this.props.chore.name,
     localValue: this.props.chore.value,
     valueClick: false,
+    completedBy: '',
   };
 
   componentDidMount() {
     const { user, chore } = this.props;
     this.bindKeyPress();
     this.ref = db.ref(`/families/${user.uid}/chores/${chore.id}`);
+    this.lastCompletedRef = db
+      .ref(`/families/${user.uid}/completedChores`)
+      .orderByChild('choreId')
+      .equalTo(chore.id)
+      .limitToLast(1);
+    this.lastCompletedRef.on('value', snapshot => {
+      snapshot.forEach(child => {
+        const { completedBy } = child.val();
+        db
+          .ref(`/families/${user.uid}/profiles/${completedBy}`)
+          .once('value')
+          .then(snapshot => {
+            const { name } = snapshot.val();
+            this.setState({ completedBy: name });
+          });
+      });
+    });
   }
 
   componentWillUnmount() {
     this.unbindKeyPress();
     this.ref.off();
+    this.lastCompletedRef.off();
   }
 
   bindKeyPress() {
@@ -95,7 +114,7 @@ class Chore extends React.Component {
 
   render() {
     const { chore: { name, value } } = this.props;
-    const { editing, localName, localValue } = this.state;
+    const { editing, localName, localValue, completedBy } = this.state;
 
     return (
       <Wrapper>
@@ -120,6 +139,7 @@ class Chore extends React.Component {
               ref={i => (this.value = i)}
               onFocus={this.moveToEnd}
             />
+            <span>{completedBy}</span>
             <Actions>
               <Button onClick={this.handleCancel} color="yellow">
                 <TiCancel />
@@ -135,6 +155,7 @@ class Chore extends React.Component {
             <TextButton onClick={() => this.handleEdit(true)}>
               ${value.toFixed(2)}
             </TextButton>
+            <span>{completedBy}</span>
             <Actions>
               <Button onClick={this.handleEdit}>
                 <TiPencil />
@@ -154,7 +175,7 @@ export default withUser(Chore);
 
 const Wrapper = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr) 80px;
+  grid-template-columns: repeat(3, 1fr) 80px;
   grid-column-gap: 1rem;
   margin-bottom: 0.5rem;
 `;
