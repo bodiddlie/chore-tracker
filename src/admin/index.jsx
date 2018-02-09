@@ -5,7 +5,6 @@ import Header from '../header';
 import Chores from './chores';
 import AddChore from './add-chore';
 import Profiles from './profiles';
-import { Width } from '../shared';
 
 class Admin extends React.Component {
   state = {
@@ -14,49 +13,18 @@ class Admin extends React.Component {
 
   render() {
     const { profiles } = this.props;
-    const { tab } = this.state;
 
     return (
-      <Width>
-        {width => (
-          <Grid>
-            <Header total={4000.32} />
-            {width < 700 ? (
-              <React.Fragment>
-                <SubHead>
-                  <button
-                    type="button"
-                    onClick={() => this.setState({ tab: 'profiles' })}
-                  >
-                    Profiles
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => this.setState({ tab: 'chores' })}
-                  >
-                    Chores
-                  </button>
-                </SubHead>
-                {tab === 'profiles' && <Profiles profiles={profiles} />}
-                {tab === 'chores' && (
-                  <React.Fragment>
-                    <AddChore />
-                    <Chores />
-                  </React.Fragment>
-                )}
-              </React.Fragment>
-            ) : (
-              <Desktop>
-                <ChoreContainer>
-                  <AddChore />
-                  <Chores />
-                </ChoreContainer>
-                <Profiles profiles={profiles} />
-              </Desktop>
-            )}
-          </Grid>
-        )}
-      </Width>
+      <Grid>
+        <Header total={4000.32} />
+        <Desktop>
+          <ChoreContainer>
+            <AddChore />
+            <Chores />
+          </ChoreContainer>
+          <Profiles profiles={profiles} />
+        </Desktop>
+      </Grid>
     );
   }
 }
@@ -67,17 +35,16 @@ const Grid = styled.div`
   display: grid;
 `;
 
-const SubHead = styled.div`
-  background: darkgreen;
-  padding: 0.5rem;
-  margin-bottom: 0.5rem;
-`;
-
 const Desktop = styled.div`
   display: grid;
   grid-template-columns: 3fr 1fr;
   width: 100%;
   align-items: start;
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+    grid-gap: 0.5rem;
+  }
 `;
 
 const ChoreContainer = styled.div`
