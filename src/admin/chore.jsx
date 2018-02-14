@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { TiCancel, TiDownload, TiPencil, TiTrash } from 'react-icons/lib/ti';
 import NumericInput from 'react-numeric-input';
+import format from 'date-fns/format';
 
 import { db } from '../firebase';
 import { withUser } from '../user';
@@ -27,13 +28,15 @@ class Chore extends React.Component {
       .limitToLast(1);
     this.lastCompletedRef.on('value', snapshot => {
       snapshot.forEach(child => {
-        const { completedBy } = child.val();
+        const { completedBy, completedDate } = child.val();
         db
           .ref(`/families/${user.uid}/profiles/${completedBy}`)
           .once('value')
           .then(snapshot => {
             const { name } = snapshot.val();
-            this.setState({ completedBy: name });
+            this.setState({
+              completedBy: `${name} @ ${format(completedDate, 'MM/DD')}`,
+            });
           });
       });
     });
@@ -155,7 +158,7 @@ class Chore extends React.Component {
             <TextButton onClick={() => this.handleEdit(true)}>
               ${value.toFixed(2)}
             </TextButton>
-            <span>{completedBy}</span>
+            <Last>{completedBy}</Last>
             <Actions>
               <Button onClick={this.handleEdit}>
                 <TiPencil />
@@ -183,4 +186,11 @@ const Wrapper = styled.div`
 const Actions = styled.div`
   display: flex;
   justify-content: space-between;
+`;
+
+const Last = styled.div`
+  font-size: 0.9rem;
+  padding: 3px;
+  border-bottom: 1px solid transparent;
+  align-self: center;
 `;

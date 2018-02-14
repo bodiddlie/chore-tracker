@@ -32,7 +32,7 @@ class Chores extends React.Component {
         <Grid>
           <Heading>Name</Heading>
           <Heading>Value</Heading>
-          <Heading>Last Completed By</Heading>
+          <Heading>Last Completed</Heading>
           <Heading>Actions</Heading>
         </Grid>
         {chores.map(c => <Chore key={c.id} chore={c} />)}
