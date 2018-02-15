@@ -14,6 +14,9 @@ export const firebaseApp = firebase.initializeApp(config);
 export const db = firebaseApp.database();
 export const auth = firebaseApp.auth();
 export const googleProvider = new firebase.auth.GoogleAuthProvider();
+export const facebookProvider = new firebase.auth.FacebookAuthProvider();
+export const twitterProvider = new firebase.auth.TwitterAuthProvider();
+export const githubProvider = new firebase.auth.GithubAuthProvider();
 export const storageKey = 'chore-tracker-regnipelk';
 
 export const isAuthenticated = () => {

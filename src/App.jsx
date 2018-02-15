@@ -4,11 +4,13 @@ import PropTypes from 'prop-types';
 
 import ErrorBoundary from './error-boundary';
 import Main from './main';
-import { auth, googleProvider, db } from './firebase';
+import { auth, db } from './firebase';
+import Login from './login';
 
 class App extends React.Component {
   state = {
     user: null,
+    loading: true,
   };
 
   static childContextTypes = {
@@ -22,20 +24,18 @@ class App extends React.Component {
   componentDidMount() {
     this.unsubscribe = auth.onAuthStateChanged(user => {
       if (user) {
-        const { displayName, uid } = user;
+        const { uid } = user;
         const endpoint = `/families/${user.uid}`;
         db.ref(endpoint).on('value', snapshot => {
           const saved = snapshot.val();
 
-          if (saved) {
-            this.setState({ user: saved });
-          } else {
-            db.ref(endpoint).set({ displayName, uid });
-            this.setState({ user });
+          if (!saved) {
+            db.ref(endpoint).set({ uid });
           }
+          this.setState({ user, loading: false });
         });
       } else {
-        this.setState({ user: null });
+        this.setState({ user: null, loading: false });
       }
     });
   }
@@ -57,7 +57,13 @@ class App extends React.Component {
             gray: '#676767',
           }}
         >
-          {!!this.state.user ? <Main /> : <Home />}
+          {this.state.loading ? (
+            <Loading />
+          ) : (
+            <React.Fragment>
+              {!!this.state.user ? <Main /> : <Login />}
+            </React.Fragment>
+          )}
         </ThemeProvider>
       </ErrorBoundary>
     );
@@ -66,15 +72,8 @@ class App extends React.Component {
 
 export default App;
 
-const Home = () => (
+const Loading = () => (
   <div>
-    <h1>Hi there</h1>
-    <button
-      onClick={() => {
-        auth.signInWithPopup(googleProvider);
-      }}
-    >
-      Sign In
-    </button>
+    <h1>Loading...</h1>
   </div>
 );
