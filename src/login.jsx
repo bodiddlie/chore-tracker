@@ -66,7 +66,7 @@ class Login extends React.Component {
     if (width > 768) {
       auth.signInWithPopup(googleProvider);
     } else {
-      auth.signInWithRedirect(googleProvider);
+      auth.signInWithRedirect(googleProvider).catch(alert);
     }
   };
 

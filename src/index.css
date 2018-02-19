@@ -10,7 +10,7 @@ body {
   box-shadow: none;
   outline: none;
   width: 100%;
-  font-size: 0.9rem;
+  font-size: 16px;
 }
 
 .chore-value-input {
@@ -19,8 +19,8 @@ body {
   outline: none;
   padding: 3px;
   box-shadow: none;
-  font-size: 0.9rem;
   width: 100%;
+  font-size: 16px;
 }
 
 .react-numeric-input {

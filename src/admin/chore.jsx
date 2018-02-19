@@ -121,28 +121,28 @@ class Chore extends React.Component {
 
     return (
       <Wrapper>
+        <EditableText
+          name="localName"
+          value={editing ? localName : name}
+          onChange={this.handleChange}
+          innerRef={i => (this.input = i)}
+          onFocus={this.moveToEnd}
+          label="Name"
+          onClick={() => this.handleEdit(false)}
+          editing={editing}
+        />
+        <EditableNumber
+          name="localValue"
+          value={editing ? localValue : value}
+          onChange={this.handleNumberChange}
+          innerRef={i => (this.value = i)}
+          onFocus={this.moveToEnd}
+          onClick={() => this.handleEdit(true)}
+          editing={editing}
+        />
+        <Last>{completedBy}</Last>
         {editing ? (
           <React.Fragment>
-            <TextInput
-              name="localName"
-              value={localName}
-              onChange={this.handleChange}
-              innerRef={i => (this.input = i)}
-              onFocus={this.moveToEnd}
-            />
-            <NumericInput
-              name="localValue"
-              value={localValue}
-              step={0.01}
-              min={0}
-              precision={2}
-              style={false} //eslint-disable-line
-              className="chore-value-input"
-              onChange={this.handleNumberChange}
-              ref={i => (this.value = i)}
-              onFocus={this.moveToEnd}
-            />
-            <span>{completedBy}</span>
             <Actions>
               <Button onClick={this.handleCancel} color="yellow">
                 <TiCancel />
@@ -154,13 +154,8 @@ class Chore extends React.Component {
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <TextButton onClick={this.handleEdit}>{name}</TextButton>
-            <TextButton onClick={() => this.handleEdit(true)}>
-              ${value.toFixed(2)}
-            </TextButton>
-            <Last>{completedBy}</Last>
             <Actions>
-              <Button onClick={this.handleEdit}>
+              <Button onClick={() => this.handleEdit(false)}>
                 <TiPencil />
               </Button>
               <Button onClick={this.handleDelete} color="red">
@@ -176,11 +171,59 @@ class Chore extends React.Component {
 
 export default withUser(Chore);
 
+function EditableText(props) {
+  const { name, value, onChange, innerRef, onFocus, onClick, editing } = props;
+
+  if (editing) {
+    return (
+      <TextInput
+        name={name}
+        value={value}
+        onChange={onChange}
+        innerRef={innerRef}
+        onFocus={onFocus}
+      />
+    );
+  } else {
+    return <TextButton onClick={onClick}>{value}</TextButton>;
+  }
+}
+
+function EditableNumber(props) {
+  const { name, value, onChange, innerRef, onFocus, onClick, editing } = props;
+
+  if (editing) {
+    return (
+      <NumericInput
+        name={name}
+        value={value}
+        step={0.01}
+        min={0}
+        precision={2}
+        style={false} //eslint-disable-line
+        className="chore-value-input"
+        onChange={onChange}
+        ref={innerRef}
+        onFocus={onFocus}
+      />
+    );
+  } else {
+    return <TextButton onClick={onClick}>${value.toFixed(2)}</TextButton>;
+  }
+}
+
 const Wrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr) 80px;
   grid-column-gap: 1rem;
   margin-bottom: 0.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 0.5rem;
+  }
 `;
 
 const Actions = styled.div`

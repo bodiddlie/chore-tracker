@@ -80,6 +80,7 @@ class Admin extends React.Component {
         </Header>
         <Desktop>
           <ChoreContainer>
+            <Heading>Chores</Heading>
             <AddChore />
             <Chores />
           </ChoreContainer>
@@ -102,10 +103,15 @@ const Desktop = styled.div`
   width: 100%;
   align-items: start;
 
-  @media (max-width: 700px) {
+  @media (max-width: 768px) {
     grid-template-columns: 1fr;
     grid-gap: 0.5rem;
   }
+`;
+
+const Heading = styled.h4`
+  margin: 0;
+  padding: 0;
 `;
 
 const ChoreContainer = styled.div`

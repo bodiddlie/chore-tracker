@@ -58,7 +58,7 @@ class AddChore extends React.Component {
     return (
       <Form onSubmit={this.handleSubmit}>
         <TextBox
-          label="Name"
+          label="New Chore Name"
           name="name"
           value={name}
           onChange={this.handleChange}

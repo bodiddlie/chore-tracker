@@ -49,8 +49,13 @@ const Grid = styled.div`
   grid-column-gap: 1rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.5);
   margin-bottom: 0.25rem;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const Heading = styled.div`
   font-weight: bold;
+  font-size: 0.8rem;
 `;
