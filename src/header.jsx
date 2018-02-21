@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { FaSignOut, FaUser } from 'react-icons/lib/fa';
 
 import { auth } from './firebase';
 
@@ -10,9 +11,14 @@ const Header = ({ children }, { selectedProfile, clearProfile }) => {
       <div>{children}</div>
       <div>
         {!!selectedProfile && (
-          <button onClick={clearProfile}>{selectedProfile.name}</button>
+          <Button onClick={clearProfile}>
+            <FaUser />
+            {selectedProfile.name}
+          </Button>
         )}
-        <button onClick={() => auth.signOut()}>Sign Out</button>
+        <Button onClick={() => auth.signOut()}>
+          <FaSignOut />Sign Out
+        </Button>
       </div>
     </Wrapper>
   );
@@ -30,4 +36,21 @@ export const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 1rem;
+`;
+
+const Button = styled.button.attrs({
+  type: 'button',
+})`
+  border: none;
+  background: transparent;
+  color: ${props => props.theme.lightgray};
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s linear;
+
+  &:hover {
+    color: #efefef;
+  }
 `;

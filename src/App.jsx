@@ -55,6 +55,7 @@ class App extends React.Component {
             red: 'hsl(0, 50%, 50%)',
             yellow: 'hsl(60, 60%, 50%)',
             gray: '#676767',
+            lightgray: '#cdcdcd',
           }}
         >
           {this.state.loading ? (
