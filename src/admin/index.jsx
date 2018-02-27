@@ -21,7 +21,10 @@ class Admin extends React.Component {
 
   componentDidMount() {
     const { user } = this.props;
-    this.ref = db.ref(`/families/${user.uid}/completedChores`);
+    this.ref = db
+      .ref(`/families/${user.uid}/completedChores`)
+      .orderByChild('paid')
+      .equalTo(false);
     this.ref.on('value', snapshot => {
       const completed = objectToArray(snapshot.val());
       const total = completed.reduce((prev, cur) => {
@@ -62,7 +65,13 @@ class Admin extends React.Component {
             child.child('completedChores').ref.remove();
           }
         });
-        db.ref(`/families/${user.uid}/completedChores`).remove();
+        db
+          .ref(`/families/${user.uid}/completedChores`)
+          .once('value', snapshot => {
+            snapshot.forEach(snap => {
+              snap.ref.update({ paid: true });
+            });
+          });
       });
   };
 
