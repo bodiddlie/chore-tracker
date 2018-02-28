@@ -4,6 +4,16 @@ body {
   font-family: sans-serif;
 }
 
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
 .number-input {
   padding: 3px;
   border: none;
