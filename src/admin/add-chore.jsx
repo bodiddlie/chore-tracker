@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { TiPlus } from 'react-icons/lib/ti';
+import TiPlus from 'react-icons/lib/ti/plus';
 
 import { db } from '../firebase';
 import { withUser } from '../user';

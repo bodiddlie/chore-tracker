@@ -1,12 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import {
-  TiCancel,
-  TiDownload,
-  TiPencil,
-  TiPlus,
-  TiTrash,
-} from 'react-icons/lib/ti';
+import TiCancel from 'react-icons/lib/ti/cancel';
+import TiDownload from 'react-icons/lib/ti/download';
+import TiPencil from 'react-icons/lib/ti/pencil';
+import TiTrash from 'react-icons/lib/ti/trash';
+import TiPlus from 'react-icons/lib/ti/plus';
 
 import { db } from '../firebase';
 import { withUser } from '../user';

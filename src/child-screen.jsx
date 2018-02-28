@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import format from 'date-fns/format';
-import { TiCancel } from 'react-icons/lib/ti';
+import TiCancel from 'react-icons/lib/ti/cancel';
 
 import { db } from './firebase';
 import { objectToArray } from './util';

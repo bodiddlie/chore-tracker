@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { FaSignOut, FaUser } from 'react-icons/lib/fa';
+import FaSignOut from 'react-icons/lib/fa/sign-out';
+import FaUser from 'react-icons/lib/fa/user';
 
 import { auth } from './firebase';
 
