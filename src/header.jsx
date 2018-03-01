@@ -9,7 +9,7 @@ import { auth } from './firebase';
 const Header = ({ children }, { selectedProfile, clearProfile }) => {
   return (
     <Wrapper>
-      <div>{children}</div>
+      <Left>{children}</Left>
       {!!selectedProfile && (
         <Button onClick={clearProfile}>
           <FaUser />
@@ -35,8 +35,12 @@ export const Wrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   grid-auto-flow: column;
-  padding: 1rem;
+  height: 2.5rem;
   align-items: center;
+`;
+
+const Left = styled.div`
+  margin-left: 0.5rem;
 `;
 
 const Button = styled.button.attrs({
