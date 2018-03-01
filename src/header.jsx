@@ -10,17 +10,15 @@ const Header = ({ children }, { selectedProfile, clearProfile }) => {
   return (
     <Wrapper>
       <div>{children}</div>
-      <div>
-        {!!selectedProfile && (
-          <Button onClick={clearProfile}>
-            <FaUser />
-            {selectedProfile.name}
-          </Button>
-        )}
-        <Button onClick={() => auth.signOut()}>
-          <FaSignOut />Sign Out
+      {!!selectedProfile && (
+        <Button onClick={clearProfile}>
+          <FaUser />
+          {selectedProfile.name}
         </Button>
-      </div>
+      )}
+      <Button onClick={() => auth.signOut()}>
+        <FaSignOut />Sign Out
+      </Button>
     </Wrapper>
   );
 };
@@ -34,9 +32,11 @@ export default Header;
 
 export const Wrapper = styled.div`
   background: ${props => props.theme.gray};
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-auto-flow: column;
   padding: 1rem;
+  align-items: center;
 `;
 
 const Button = styled.button.attrs({
@@ -50,6 +50,7 @@ const Button = styled.button.attrs({
   cursor: pointer;
   font-weight: bold;
   transition: all 0.2s linear;
+  font-size: 1rem;
 
   &:hover {
     color: #efefef;

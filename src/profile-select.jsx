@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { Wrapper } from './styles';
 import Header from './header';
 import { db } from './firebase';
 import { objectToArray } from './util';
@@ -43,7 +42,7 @@ class ProfileSelect extends React.Component {
     const { selectProfile } = this.props;
     const options = [{ id: 'admin', name: 'Admin' }, ...profiles];
     return (
-      <Wrapper>
+      <React.Fragment>
         <Header />
         <ProfileList>
           {options.map(p => (
@@ -53,7 +52,7 @@ class ProfileSelect extends React.Component {
             </Profile>
           ))}
         </ProfileList>
-      </Wrapper>
+      </React.Fragment>
     );
   }
 }

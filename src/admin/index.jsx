@@ -82,10 +82,14 @@ class Admin extends React.Component {
     return (
       <Grid>
         <Header>
-          {formatter.format(total)}{' '}
-          <button type="button" onClick={this.handleCloseout}>
-            Close
-          </button>
+          <LeftSide>
+            <div
+              style={{ display: 'flex', alignItems: 'center', color: 'white' }}
+            >
+              {formatter.format(total)}
+            </div>
+            {total > 0 && <Button onClick={this.handleCloseout}>Payout</Button>}
+          </LeftSide>
         </Header>
         <Desktop>
           <ChoreContainer>
@@ -128,5 +132,28 @@ const ChoreContainer = styled.div`
   grid-template-rows: auto 1fr;
   grid-gap: 1.5rem;
   padding: 1rem;
-  border-right: 1px solid rgba(0, 0, 0, 0.2);
+`;
+
+const LeftSide = styled.div`
+  display: grid;
+  grid-template-columns: 50px repeat(auto-fill, 70px);
+`;
+
+const Button = styled.button.attrs({
+  type: 'button',
+})`
+  border: none;
+  background: transparent;
+  color: ${props => props.theme.lightgray};
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s linear;
+  font-size: 1rem;
+  padding: 0;
+
+  &:hover {
+    color: #efefef;
+  }
 `;
