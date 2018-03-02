@@ -9,7 +9,7 @@ import TiPlus from 'react-icons/lib/ti/plus';
 import { db } from '../firebase';
 import { withUser } from '../user';
 import { TextBox } from '../shared';
-import { Button, TextButton, TextInput } from '../styles';
+import { Button, SmallButton, TextButton, TextInput } from '../styles';
 import { objectToArray } from '../util';
 
 const formatter = new Intl.NumberFormat('en-US', {
@@ -20,7 +20,27 @@ const formatter = new Intl.NumberFormat('en-US', {
 class ProfileList extends React.Component {
   state = {
     name: '',
+    total: 0,
   };
+
+  componentDidMount() {
+    const { user } = this.props;
+    this.ref = db
+      .ref(`/families/${user.uid}/completedChores`)
+      .orderByChild('paid')
+      .equalTo(false);
+    this.ref.on('value', snapshot => {
+      const completed = objectToArray(snapshot.val());
+      const total = completed.reduce((prev, cur) => {
+        return prev + cur.value;
+      }, 0);
+      this.setState({ total });
+    });
+  }
+
+  componentWillUnmount() {
+    this.ref.off();
+  }
 
   handleChange = ({ target }) => {
     this.setState({ [target.name]: target.value });
@@ -28,6 +48,50 @@ class ProfileList extends React.Component {
 
   validate = () => {
     return !!this.state.name.length;
+  };
+
+  handlePayout = () => {
+    if (
+      !window.confirm(
+        'Are you sure you are ready to pay out allowance? This will clear all completed chores.'
+      )
+    )
+      return;
+
+    const { user } = this.props;
+    db
+      .ref(`/families/${user.uid}/profiles`)
+      .once('value')
+      .then(snapshot => {
+        snapshot.forEach(child => {
+          let total = 0;
+
+          child.child('completedChores').forEach(snap => {
+            total += snap.val().value;
+          });
+
+          if (total > 0) {
+            const { key } = child.ref.child('payouts').push();
+            const payout = { id: key, total, date: new Date() };
+
+            const update = {
+              [`/families/${user.uid}/profiles/${
+                child.key
+              }/payouts/${key}`]: payout,
+            };
+            db.ref().update(update);
+
+            child.child('completedChores').ref.remove();
+          }
+        });
+        db
+          .ref(`/families/${user.uid}/completedChores`)
+          .once('value', snapshot => {
+            snapshot.forEach(snap => {
+              snap.ref.update({ paid: true });
+            });
+          });
+      });
   };
 
   onSubmit = event => {
@@ -49,11 +113,16 @@ class ProfileList extends React.Component {
 
   render() {
     const { profiles, user } = this.props;
-    const { name } = this.state;
+    const { name, total } = this.state;
 
     return (
       <Grid>
         <Heading>Profiles</Heading>
+        {total > 0 && (
+          <SmallButton color="gray" onClick={this.handlePayout}>
+            Payout Total - {formatter.format(total)}
+          </SmallButton>
+        )}
         <AddEdit onSubmit={this.onSubmit}>
           <TextBox
             value={name}

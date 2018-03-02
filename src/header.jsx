@@ -6,41 +6,76 @@ import FaUser from 'react-icons/lib/fa/user';
 
 import { auth } from './firebase';
 
-const Header = ({ children }, { selectedProfile, clearProfile }) => {
-  return (
-    <Wrapper>
-      <Left>{children}</Left>
-      {!!selectedProfile && (
-        <Button onClick={clearProfile}>
-          <FaUser />
-          {selectedProfile.name}
-        </Button>
-      )}
-      <Button onClick={() => auth.signOut()}>
-        <FaSignOut />Sign Out
-      </Button>
-    </Wrapper>
-  );
-};
+class Header extends React.Component {
+  static contextTypes = {
+    selectedProfile: PropTypes.object,
+    clearProfile: PropTypes.func,
+  };
 
-Header.contextTypes = {
-  selectedProfile: PropTypes.object,
-  clearProfile: PropTypes.func,
-};
+  state = {
+    open: false,
+  };
+
+  componentDidMount() {
+    document.addEventListener('click', this.handleOutsideClick, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleOutsideClick, false);
+  }
+
+  handleOutsideClick = e => {
+    if (this.node && this.node.contains(e.target)) return;
+
+    this.setState({ open: false });
+  };
+
+  handleClick = () => {
+    this.setState({ open: true });
+  };
+
+  render() {
+    const { open } = this.state;
+    const { selectedProfile, clearProfile } = this.context;
+
+    return (
+      <Wrapper>
+        {!!selectedProfile ? (
+          <MenuContainer
+            innerRef={node => {
+              this.node = node;
+            }}
+          >
+            <Button onClick={this.handleClick}>{selectedProfile.name}</Button>
+            {open && (
+              <Menu>
+                <MenuButton onClick={clearProfile}>
+                  <FaUser /> Switch Profile
+                </MenuButton>
+                <MenuButton onClick={() => auth.signOut()}>
+                  <FaSignOut />Sign Out
+                </MenuButton>
+              </Menu>
+            )}
+          </MenuContainer>
+        ) : (
+          <Button onClick={() => auth.signOut()}>
+            <FaSignOut /> Sign Out
+          </Button>
+        )}
+      </Wrapper>
+    );
+  }
+}
 
 export default Header;
 
-export const Wrapper = styled.div`
+const Wrapper = styled.div`
   background: ${props => props.theme.gray};
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-auto-flow: column;
   height: 2.5rem;
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
-`;
-
-const Left = styled.div`
-  margin-left: 0.5rem;
 `;
 
 const Button = styled.button.attrs({
@@ -58,5 +93,41 @@ const Button = styled.button.attrs({
 
   &:hover {
     color: #efefef;
+  }
+`;
+
+const MenuContainer = styled.div`
+  position: relative;
+`;
+
+const Menu = styled.div`
+  display: grid;
+  grid-gap: 0.5rem;
+  position: absolute;
+  top: 100%;
+  right: 5%;
+  background: ${props => props.theme.lightgray};
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 0.5rem;
+  width: 180px;
+`;
+
+const MenuButton = styled.button.attrs({
+  type: 'button',
+})`
+  border: none;
+  background: transparent;
+  color: black;
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
+  transition: all 0.2s linear;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: bold;
+
+  &:hover {
+    text-decoration: underline;
   }
 `;

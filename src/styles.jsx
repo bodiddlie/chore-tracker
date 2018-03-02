@@ -51,13 +51,17 @@ export const Button = styled.button.attrs({
   }
 `;
 
+export const SmallButton = Button.extend`
+  font-size: 1rem;
+`;
+
 export const TextButton = styled.button.attrs({
   type: 'button',
 })`
   border: none;
   outline: none;
   box-shadow: none;
-  font-size: 0.9rem;
+  font-size: 16px;
   background: transparent;
   text-align: left;
   padding: 3px;
@@ -77,6 +81,6 @@ export const TextInput = styled.input.attrs({
   outline: none;
   padding: 3px;
   box-shadow: none;
-  font-size: 0.9rem;
+  font-size: 16px;
   width: 100%;
 `;

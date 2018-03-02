@@ -235,7 +235,7 @@ const Actions = styled.div`
 `;
 
 const Last = styled.div`
-  font-size: 0.9rem;
+  font-size: 16px;
   padding: 3px;
   border-bottom: 1px solid transparent;
   align-self: center;

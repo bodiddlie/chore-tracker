@@ -77,16 +77,12 @@ class ChildScreen extends React.Component {
   };
 
   render() {
-    const { profile } = this.props;
     const { chores, completedChores, total } = this.state;
 
     return (
       <Grid>
-        <Header>
-          <HeaderText>
-            {profile.name} - Earned {formatter.format(total)}
-          </HeaderText>
-        </Header>
+        <Header />
+        <Earnings>You have earned {formatter.format(total)} so far!</Earnings>
         <ChoreList>
           {chores.map(c => (
             <Chore key={c.id}>
@@ -123,12 +119,14 @@ const Grid = styled.div`
   display: grid;
 `;
 
-const HeaderText = styled.span`
-  color: white;
+const Earnings = styled.div`
+  font-size: 1.1rem;
+  padding: 0.5rem;
 `;
-
 const ChoreList = styled.div`
   display: grid;
+  padding: 0.5rem;
+  grid-gap: 0.25rem;
 `;
 
 const Chore = styled.div`
@@ -139,8 +137,9 @@ const Chore = styled.div`
     'details button'
     'completed button';
   grid-gap: 0.5rem;
-  border-bottom: 1px solid black;
   padding: 0.5rem;
+  border: 2px solid ${props => props.theme.gray};
+  border-radius: 5px;
 `;
 
 const Details = styled.div`
