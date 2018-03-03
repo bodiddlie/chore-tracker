@@ -37,7 +37,7 @@ class Main extends React.Component {
         const selectedProfile =
           prevState.selectedProfile ||
           JSON.parse(localStorage.getItem(profileKey)) ||
-          (profiles.length > 0 ? null : { id: 'admin', name: 'Admin' });
+          (profiles.length > 0 ? null : { id: 'admin', name: 'Parent' });
         localStorage.setItem(profileKey, JSON.stringify(selectedProfile));
         return { profiles, selectedProfile };
       });
@@ -59,7 +59,7 @@ class Main extends React.Component {
       if (prevState.profiles.length > 0) {
         localStorage.removeItem(profileKey);
       } else {
-        selectedProfile = { id: 'admin', name: 'Admin' };
+        selectedProfile = { id: 'admin', name: 'Parent' };
         localStorage.setItem(profileKey, JSON.stringify(selectedProfile));
       }
       return { selectedProfile };

@@ -117,7 +117,7 @@ class ProfileList extends React.Component {
 
     return (
       <Grid>
-        <Heading>Profiles</Heading>
+        <Heading>Children</Heading>
         {total > 0 && (
           <SmallButton color="gray" onClick={this.handlePayout}>
             Payout Total - {formatter.format(total)}
@@ -126,7 +126,7 @@ class ProfileList extends React.Component {
         <AddEdit onSubmit={this.onSubmit}>
           <TextBox
             value={name}
-            label="New Profile Name"
+            label="New Child Name"
             name="name"
             onChange={this.handleChange}
           />

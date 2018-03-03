@@ -40,7 +40,7 @@ class ProfileSelect extends React.Component {
   render() {
     const { profiles } = this.state;
     const { selectProfile } = this.props;
-    const options = [{ id: 'admin', name: 'Admin' }, ...profiles];
+    const options = [{ id: 'admin', name: 'Parent' }, ...profiles];
     return (
       <React.Fragment>
         <Header />
