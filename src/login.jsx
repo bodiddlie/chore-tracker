@@ -105,12 +105,11 @@ class Login extends React.Component {
       <Width>
         {width => (
           <Wrapper>
-            <h1>Chore Tracker</h1>
-            <p>
-              A simple chore/allowance tracking app for families. Using it is
-              simple:
+            <h1 style={{ marginBottom: '0.25rem' }}>Chore Tracker</h1>
+            <p style={{ margin: '0.25rem' }}>
+              A chore/allowance tracking app for families. Using it is simple:
             </p>
-            <ol>
+            <ol style={{ margin: '0.25rem' }}>
               <ListItem>Register/Sign in below</ListItem>
               <ListItem>Create child profiles for your kids to use</ListItem>
               <ListItem>Add chores and their values</ListItem>
@@ -211,9 +210,11 @@ export default Login;
 
 const Wrapper = styled.div`
   display: grid;
-  width: 450px;
+  width: 100%;
+  max-width: 450px;
   margin: 0 auto;
   justify-items: center;
+  padding: 0.25rem;
 `;
 
 const ListItem = styled.li`
@@ -226,7 +227,7 @@ const Form = styled.form`
   padding: 20px;
   background-color: #efefef;
   border-radius: 5px;
-  width: 400px;
+  width: 100%;
 `;
 
 const SubmitRow = styled.div`
