@@ -105,6 +105,23 @@ class Login extends React.Component {
       <Width>
         {width => (
           <Wrapper>
+            <h1>Chore Tracker</h1>
+            <p>
+              A simple chore/allowance tracking app for families. Using it is
+              simple:
+            </p>
+            <ol>
+              <ListItem>Register/Sign in below</ListItem>
+              <ListItem>Create child profiles for your kids to use</ListItem>
+              <ListItem>Add chores and their values</ListItem>
+              <ListItem>
+                Have kids sign in and mark when they complete chores
+              </ListItem>
+              <ListItem>
+                When it's time to pay allowance, see at a glance how much each
+                child has earned, then pay them and start over
+              </ListItem>
+            </ol>
             <Form onSubmit={this.handleSubmit}>
               <TextBox
                 label="Email"
@@ -193,11 +210,14 @@ class Login extends React.Component {
 export default Login;
 
 const Wrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100vh;
+  display: grid;
+  width: 450px;
+  margin: 0 auto;
+  justify-items: center;
+`;
+
+const ListItem = styled.li`
+  margin-bottom: 0.25rem;
 `;
 
 const Form = styled.form`
@@ -206,8 +226,7 @@ const Form = styled.form`
   padding: 20px;
   background-color: #efefef;
   border-radius: 5px;
-  max-width: 800px;
-  min-width: 300px;
+  width: 400px;
 `;
 
 const SubmitRow = styled.div`
