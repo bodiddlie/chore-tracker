@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import format from 'date-fns/format';
 import TiCancel from 'react-icons/lib/ti/cancel';
+import GoCheck from 'react-icons/lib/go/check';
 
 import { db } from './firebase';
 import { objectToArray } from './util';
@@ -92,7 +93,9 @@ class ChildScreen extends React.Component {
               <Completed>
                 {completedChores.filter(cc => c.id === cc.choreId).map(ch => (
                   <Mark key={ch.id}>
-                    {format(ch.completedDate || new Date(), 'MM/DD')}{' '}
+                    <span>
+                      {format(ch.completedDate || new Date(), 'MM/DD')}{' '}
+                    </span>
                     <MarkButton onClick={() => this.handleDelete(ch)}>
                       <TiCancel />
                     </MarkButton>
@@ -103,7 +106,7 @@ class ChildScreen extends React.Component {
                 onClick={() => this.handleComplete(c)}
                 color="green"
               >
-                +
+                <GoCheck />
               </CompleteButton>
             </Chore>
           ))}
@@ -131,15 +134,16 @@ const ChoreList = styled.div`
 
 const Chore = styled.div`
   display: grid;
-  grid-template-columns: 1fr 50px;
-  grid-template-rows: 1rem 1.5rem;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
   grid-template-areas:
     'details button'
-    'completed button';
+    'completed completed';
   grid-gap: 0.5rem;
   padding: 0.5rem;
   border: 2px solid ${props => props.theme.gray};
   border-radius: 5px;
+  font-size: 0.9rem;
 `;
 
 const Details = styled.div`
@@ -148,22 +152,25 @@ const Details = styled.div`
 
 const CompleteButton = Button.extend`
   grid-area: button;
+  font-size: 0.7rem;
 `;
 
 const Completed = styled.div`
   grid-area: completed;
   display: flex;
+  flex-wrap: wrap;
 `;
 
-const Mark = styled.span`
+const Mark = styled.div`
   display: flex;
   align-items: center;
   color: white;
-  padding: 0.3rem;
+  padding: 0.1rem;
   margin-right: 0.25rem;
   font-size: 0.8rem;
   background: ${props => props.theme.gray};
-  border-radius: 10px;
+  border-radius: 5px;
+  margin-bottom: 0.1rem;
 `;
 
 const MarkButton = styled.button.attrs({
@@ -175,9 +182,10 @@ const MarkButton = styled.button.attrs({
   outline: none;
   border: none;
   background: transparent;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   cursor: pointer;
   color: white;
+  padding: 0;
 
   &:hover {
     color: red;
