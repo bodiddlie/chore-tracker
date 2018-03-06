@@ -1,6 +1,6 @@
 import firebase from 'firebase';
 
-let config = {
+export const config = {
   apiKey: 'AIzaSyBHZhiKz8MDP-Rmc0VXzdureDfOKWXGh_s',
   authDomain: 'chore-tracker-cdb66.firebaseapp.com',
   databaseURL: 'https://chore-tracker-cdb66.firebaseio.com',

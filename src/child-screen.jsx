@@ -4,7 +4,7 @@ import format from 'date-fns/format';
 import TiCancel from 'react-icons/lib/ti/cancel';
 import GoCheck from 'react-icons/lib/go/check';
 
-import { db } from './firebase';
+import { FirebaseRef } from './fire-fetch';
 import { objectToArray } from './util';
 import { withUser } from './user';
 import Header from './header';
@@ -15,6 +15,33 @@ const formatter = new Intl.NumberFormat('en-US', {
   currency: 'USD',
 });
 
+class ChildContainer extends React.Component {
+  render() {
+    const { profile, user } = this.props;
+    return (
+      <FirebaseRef
+        paths={[
+          `/chores`,
+          `/profiles/${profile.id}/completedChores`,
+          `/completedChores`,
+        ]}
+      >
+        {(choreRef, completeRef, adminCompleteRef) => (
+          <ChildScreen
+            choreRef={choreRef}
+            completeRef={completeRef}
+            adminCompleteRef={adminCompleteRef}
+            profile={profile}
+            user={user}
+          />
+        )}
+      </FirebaseRef>
+    );
+  }
+}
+
+export default withUser(ChildContainer);
+
 class ChildScreen extends React.Component {
   state = {
     chores: [],
@@ -23,6 +50,7 @@ class ChildScreen extends React.Component {
   };
 
   componentDidMount() {
+    /*
     const { user, profile } = this.props;
     this.choreRef = db.ref(`/families/${user.uid}/chores`);
     this.completeRef = db.ref(
@@ -42,18 +70,33 @@ class ChildScreen extends React.Component {
       }, 0);
       this.setState({ completedChores, total });
     });
+    */
+    const { choreRef, completeRef } = this.props;
+    choreRef.on('value', snapshot => {
+      const chores = objectToArray(snapshot.val());
+      this.setState({ chores });
+    });
+
+    completeRef.on('value', snapshot => {
+      const completedChores = objectToArray(snapshot.val());
+      const total = completedChores.reduce((prev, cur) => {
+        return prev + cur.value;
+      }, 0);
+      this.setState({ completedChores, total });
+    });
   }
 
   componentWillUnmount() {
-    this.choreRef.off();
-    this.completeRef.off();
-    this.adminCompleteRef.off();
+    const { choreRef, completeRef, adminCompleteRef } = this.props;
+    choreRef.off();
+    completeRef.off();
+    adminCompleteRef.off();
   }
 
   handleComplete = chore => {
-    const { user, profile } = this.props;
+    const { user, profile, completeRef } = this.props;
 
-    const { key } = this.completeRef.push();
+    const { key } = completeRef.push();
     const newChore = {
       id: key,
       choreId: chore.id,
@@ -69,12 +112,13 @@ class ChildScreen extends React.Component {
       [`/families/${user.uid}/completedChores/${key}`]: newChore,
     };
 
-    db.ref().update(update);
+    completeRef.root.update(update);
   };
 
   handleDelete = chore => {
-    this.completeRef.child(chore.id).remove();
-    this.adminCompleteRef.child(chore.id).remove();
+    const { completeRef, adminCompleteRef } = this.props;
+    completeRef.child(chore.id).remove();
+    adminCompleteRef.child(chore.id).remove();
   };
 
   render() {
@@ -116,7 +160,7 @@ class ChildScreen extends React.Component {
   }
 }
 
-export default withUser(ChildScreen);
+//export default withUser(ChildScreen);
 
 const Grid = styled.div`
   display: grid;
