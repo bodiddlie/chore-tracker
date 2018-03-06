@@ -24,14 +24,18 @@ class FirebaseQuery extends React.Component {
   }
 
   buildQuery() {
-    const { on } = this.props;
+    const { on, toArray, onChange } = this.props;
 
     this.ref = this.getReference();
 
     if (on) {
       this.ref.on('value', snapshot => {
-        const value = snapshot.val();
+        const val = snapshot.val();
+        const value = toArray ? objectToArray(val) : val;
         this.setState({ value });
+        if (onChange) {
+          onChange(value);
+        }
       });
     }
   }
@@ -47,7 +51,7 @@ class FirebaseQuery extends React.Component {
   render() {
     const { render, children, toArray } = this.props;
 
-    const value = toArray ? objectToArray(this.state.value) : this.state.value;
+    const value = toArray ? this.state.value || [] : this.state.value;
 
     return render ? render(value, this.ref) : children(value, this.ref);
   }
