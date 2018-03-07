@@ -12,7 +12,7 @@ import {
   twitterProvider,
   githubProvider,
 } from './firebase';
-import { TextBox, Width } from './shared';
+import { TextBox } from './shared';
 
 class Login extends React.Component {
   state = {
@@ -60,32 +60,32 @@ class Login extends React.Component {
     this.setState({ [target.name]: target.value });
   };
 
-  handleGoogle = width => {
-    if (width > 768) {
+  handleGoogle = () => {
+    if (window.innerWidth > 768) {
       auth.signInWithPopup(googleProvider);
     } else {
       auth.signInWithRedirect(googleProvider).catch(alert);
     }
   };
 
-  handleFacebook = width => {
-    if (width > 768) {
+  handleFacebook = () => {
+    if (window.innerWidth > 768) {
       auth.signInWithPopup(facebookProvider);
     } else {
       auth.signInWithRedirect(facebookProvider);
     }
   };
 
-  handleTwitter = width => {
-    if (width > 768) {
+  handleTwitter = () => {
+    if (window.innerWidth > 768) {
       auth.signInWithPopup(twitterProvider);
     } else {
       auth.signInWithRedirect(twitterProvider);
     }
   };
 
-  handleGithub = width => {
-    if (width > 768) {
+  handleGithub = () => {
+    if (window.innerWidth > 768) {
       auth.signInWithPopup(githubProvider);
     } else {
       auth.signInWithRedirect(githubProvider);
@@ -102,106 +102,88 @@ class Login extends React.Component {
     const { onLoginForm, email, password, confirm, displayName } = this.state;
 
     return (
-      <Width>
-        {width => (
-          <Wrapper>
-            <h1 style={{ marginBottom: '0.25rem' }}>Chore Tracker</h1>
-            <p style={{ margin: '0.25rem' }}>
-              A chore/allowance tracking app for families. Using it is simple:
-            </p>
-            <ol style={{ margin: '0.25rem' }}>
-              <ListItem>Register/Sign in below</ListItem>
-              <ListItem>Create child profiles for your kids to use</ListItem>
-              <ListItem>Add chores and their values</ListItem>
-              <ListItem>
-                Have kids sign in and mark when they complete chores
-              </ListItem>
-              <ListItem>
-                When it's time to pay allowance, see at a glance how much each
-                child has earned, then pay them and start over
-              </ListItem>
-            </ol>
-            <Form onSubmit={this.handleSubmit}>
+      <Wrapper>
+        <h1 style={{ marginBottom: '0.25rem' }}>Chore Tracker</h1>
+        <p style={{ margin: '0.25rem' }}>
+          A chore/allowance tracking app for families. Using it is simple:
+        </p>
+        <ol style={{ margin: '0.25rem' }}>
+          <ListItem>Register/Sign in below</ListItem>
+          <ListItem>Create child profiles for your kids to use</ListItem>
+          <ListItem>Add chores and their values</ListItem>
+          <ListItem>
+            Have kids sign in and mark when they complete chores
+          </ListItem>
+          <ListItem>
+            When it's time to pay allowance, see at a glance how much each child
+            has earned, then pay them and start over
+          </ListItem>
+        </ol>
+        <Form onSubmit={this.handleSubmit}>
+          <TextBox
+            label="Email"
+            value={email}
+            name="email"
+            onChange={this.handleChange}
+          />
+          {onLoginForm ? (
+            <React.Fragment>
               <TextBox
-                label="Email"
-                value={email}
-                name="email"
+                label="Password"
+                value={password}
+                name="password"
+                type="password"
                 onChange={this.handleChange}
               />
-              {onLoginForm ? (
-                <React.Fragment>
-                  <TextBox
-                    label="Password"
-                    value={password}
-                    name="password"
-                    type="password"
-                    onChange={this.handleChange}
-                  />
-                </React.Fragment>
-              ) : (
-                <React.Fragment>
-                  <TextBox
-                    label="Display Name"
-                    value={displayName}
-                    name="displayName"
-                    onChange={this.handleChange}
-                  />
-                  <TextBox
-                    label="Password"
-                    value={password}
-                    name="password"
-                    onChange={this.handleChange}
-                    type="password"
-                  />
-                  <TextBox
-                    label="Confirm Password"
-                    value={confirm}
-                    name="confirm"
-                    type="password"
-                    onChange={this.handleChange}
-                  />
-                </React.Fragment>
-              )}
-              <SubmitRow>
-                <SubmitButton>
-                  {onLoginForm ? 'Log In' : 'Register'}
-                </SubmitButton>
-                <ToggleButton
-                  onClick={() => this.setState({ onLoginForm: !onLoginForm })}
-                >
-                  {onLoginForm ? 'Sign Up' : 'Log In'}
-                </ToggleButton>
-              </SubmitRow>
-              <ButtonRow>
-                <ProviderButton
-                  bg="#DD4B39"
-                  onClick={() => this.handleGoogle(width)}
-                >
-                  <FaGoogle /> Log In with Google
-                </ProviderButton>
-                <ProviderButton
-                  bg="#4267B2"
-                  onClick={() => this.handleFacebook(width)}
-                >
-                  <FaFacebookSquare /> Log In with Facebook
-                </ProviderButton>
-                <ProviderButton
-                  bg="#55ACEE"
-                  onClick={() => this.handleTwitter(width)}
-                >
-                  <FaTwitter /> Log In with Twitter
-                </ProviderButton>
-                <ProviderButton
-                  bg="#444444"
-                  onClick={() => this.handleGithub(width)}
-                >
-                  <FaGithub /> Log In with GitHub
-                </ProviderButton>
-              </ButtonRow>
-            </Form>
-          </Wrapper>
-        )}
-      </Width>
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <TextBox
+                label="Display Name"
+                value={displayName}
+                name="displayName"
+                onChange={this.handleChange}
+              />
+              <TextBox
+                label="Password"
+                value={password}
+                name="password"
+                onChange={this.handleChange}
+                type="password"
+              />
+              <TextBox
+                label="Confirm Password"
+                value={confirm}
+                name="confirm"
+                type="password"
+                onChange={this.handleChange}
+              />
+            </React.Fragment>
+          )}
+          <SubmitRow>
+            <SubmitButton>{onLoginForm ? 'Log In' : 'Register'}</SubmitButton>
+            <ToggleButton
+              onClick={() => this.setState({ onLoginForm: !onLoginForm })}
+            >
+              {onLoginForm ? 'Sign Up' : 'Log In'}
+            </ToggleButton>
+          </SubmitRow>
+          <ButtonRow>
+            <ProviderButton bg="#DD4B39" onClick={() => this.handleGoogle()}>
+              <FaGoogle /> Log In with Google
+            </ProviderButton>
+            <ProviderButton bg="#4267B2" onClick={() => this.handleFacebook()}>
+              <FaFacebookSquare /> Log In with Facebook
+            </ProviderButton>
+            <ProviderButton bg="#55ACEE" onClick={() => this.handleTwitter()}>
+              <FaTwitter /> Log In with Twitter
+            </ProviderButton>
+            <ProviderButton bg="#444444" onClick={() => this.handleGithub()}>
+              <FaGithub /> Log In with GitHub
+            </ProviderButton>
+          </ButtonRow>
+        </Form>
+      </Wrapper>
     );
   }
 }
