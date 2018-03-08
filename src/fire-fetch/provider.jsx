@@ -31,3 +31,31 @@ class FirebaseProvider extends React.Component {
 }
 
 export default FirebaseProvider;
+
+export class FirebaseApp extends React.Component {
+  static contextTypes = {
+    fbapp: PropTypes.object,
+  };
+
+  render() {
+    const { render, children } = this.props;
+
+    if (render) {
+      return render(this.context.fbapp);
+    } else {
+      return children(this.context.fbapp);
+    }
+  }
+}
+
+export function withFbApp(Component) {
+  return class extends React.Component {
+    render() {
+      return (
+        <FirebaseApp>
+          {fbapp => <Component fbapp={fbapp} {...this.props} />}
+        </FirebaseApp>
+      );
+    }
+  };
+}

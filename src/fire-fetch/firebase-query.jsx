@@ -1,22 +1,17 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { objectToArray } from '../util';
+import { withRootRef } from './root-ref';
+import { withFbApp } from './provider';
 
 class FirebaseQuery extends React.Component {
-  static contextTypes = {
-    fbapp: PropTypes.object,
-    rootPath: PropTypes.string,
-  };
-
   state = {
     value: null,
     loading: true,
   };
 
   getReference() {
-    const { fbapp, rootPath } = this.context;
-    const { path, reference } = this.props;
+    const { path, reference, fbapp, rootPath } = this.props;
     if (reference) {
       return reference;
     } else {
@@ -72,4 +67,4 @@ class FirebaseQuery extends React.Component {
   }
 }
 
-export default FirebaseQuery;
+export default withRootRef(withFbApp(FirebaseQuery));

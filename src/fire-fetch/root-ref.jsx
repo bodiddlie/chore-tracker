@@ -28,3 +28,27 @@ class RootRef extends React.Component {
 }
 
 export default RootRef;
+
+export class GetRootRef extends React.Component {
+  static contextTypes = {
+    rootPath: PropTypes.string,
+  };
+
+  render() {
+    const render = this.props.render || this.props.children;
+
+    return render(this.context.rootPath);
+  }
+}
+
+export function withRootRef(Component) {
+  return class extends React.Component {
+    render() {
+      return (
+        <GetRootRef>
+          {rootPath => <Component rootPath={rootPath} {...this.props} />}
+        </GetRootRef>
+      );
+    }
+  };
+}

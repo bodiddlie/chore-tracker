@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { withFbApp } from './provider';
+
 class AuthListener extends React.Component {
   state = {
     user: null,
@@ -10,16 +12,12 @@ class AuthListener extends React.Component {
     user: PropTypes.object,
   };
 
-  static contextTypes = {
-    fbapp: PropTypes.object,
-  };
-
   getChildContext() {
     return { ...this.state };
   }
 
   componentDidMount() {
-    const { fbapp } = this.context;
+    const { fbapp } = this.props;
 
     if (!fbapp) return;
 
@@ -43,4 +41,4 @@ class AuthListener extends React.Component {
   }
 }
 
-export default AuthListener;
+export default withFbApp(AuthListener);

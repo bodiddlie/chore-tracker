@@ -1,15 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+
+import { withRootRef } from './root-ref';
+import { withFbApp } from './provider';
 
 class FirebaseRef extends React.Component {
-  static contextTypes = {
-    fbapp: PropTypes.object,
-    rootPath: PropTypes.string,
-  };
-
   getReferences() {
-    const { path, paths } = this.props;
-    const { fbapp, rootPath } = this.context;
+    const { path, paths, fbapp, rootPath } = this.props;
 
     if (path) {
       return [fbapp.database().ref(`${rootPath}/${path}`)];
@@ -27,4 +23,4 @@ class FirebaseRef extends React.Component {
   }
 }
 
-export default FirebaseRef;
+export default withRootRef(withFbApp(FirebaseRef));
