@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import Header from './header';
 import { db } from './firebase';
 import { objectToArray } from './util';
 import { withUser } from './user';
@@ -43,7 +42,6 @@ class ProfileSelect extends React.Component {
     const options = [{ id: 'admin', name: 'Parent' }, ...profiles];
     return (
       <React.Fragment>
-        <Header />
         <ProfileList>
           {options.map(p => (
             <Profile key={p.id} onClick={() => selectProfile(p)}>

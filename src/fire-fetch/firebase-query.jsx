@@ -11,6 +11,7 @@ class FirebaseQuery extends React.Component {
 
   state = {
     value: null,
+    loading: true,
   };
 
   getReference() {
@@ -24,7 +25,7 @@ class FirebaseQuery extends React.Component {
   }
 
   buildQuery() {
-    const { on, toArray, onChange } = this.props;
+    const { on, toArray, onChange, once } = this.props;
 
     this.ref = this.getReference();
 
@@ -32,7 +33,18 @@ class FirebaseQuery extends React.Component {
       this.ref.on('value', snapshot => {
         const val = snapshot.val();
         const value = toArray ? objectToArray(val) : val;
-        this.setState({ value });
+        this.setState({ value, loading: false });
+        if (onChange) {
+          onChange(value);
+        }
+      });
+    }
+
+    if (once) {
+      this.ref.once('value', snapshot => {
+        const val = snapshot.val();
+        const value = toArray ? objectToArray(val) : val;
+        this.setState({ value, loading: false });
         if (onChange) {
           onChange(value);
         }
@@ -50,10 +62,13 @@ class FirebaseQuery extends React.Component {
 
   render() {
     const { render, children, toArray } = this.props;
+    const { loading } = this.state;
 
     const value = toArray ? this.state.value || [] : this.state.value;
 
-    return render ? render(value, this.ref) : children(value, this.ref);
+    return render
+      ? render(value, loading, this.ref)
+      : children(value, loading, this.ref);
   }
 }
 

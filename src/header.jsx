@@ -1,17 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
 import FaSignOut from 'react-icons/lib/fa/sign-out';
 import FaUser from 'react-icons/lib/fa/user';
 
 import { auth } from './firebase';
 
 class Header extends React.Component {
-  static contextTypes = {
-    selectedProfile: PropTypes.object,
-    clearProfile: PropTypes.func,
-  };
-
   state = {
     open: false,
   };
@@ -36,7 +30,7 @@ class Header extends React.Component {
 
   render() {
     const { open } = this.state;
-    const { selectedProfile, clearProfile } = this.context;
+    const { selectedProfile, clearProfile } = this.props;
 
     return (
       <Wrapper>

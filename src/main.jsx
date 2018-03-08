@@ -1,52 +1,29 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
-import { withUser } from './user';
-import { db } from './firebase';
-import { objectToArray } from './util';
+import { FirebaseQuery } from './fire-fetch';
 import Admin from './admin';
 import ProfileSelect from './profile-select';
 import ChildScreen from './child-screen';
+import Header from './header';
+import { Loading } from './shared';
 
 const profileKey = 'chore-tracker-profile-storage-key';
 
 class Main extends React.Component {
-  static childContextTypes = {
-    selectedProfile: PropTypes.object,
-    clearProfile: PropTypes.func,
-  };
-
-  getChildContext() {
-    return {
-      selectedProfile: this.state.selectedProfile,
-      clearProfile: this.clearProfile,
-    };
-  }
-
   state = {
-    profiles: [],
-    selectedProfile: null,
+    selectedProfile: JSON.parse(localStorage.getItem(profileKey)),
   };
 
-  componentDidMount() {
-    const { user } = this.props;
-    this.ref = db.ref(`/families/${user.uid}/profiles`);
-    this.ref.on('value', snapshot => {
-      const profiles = objectToArray(snapshot.val());
-      this.setState(prevState => {
-        const selectedProfile =
-          prevState.selectedProfile ||
-          JSON.parse(localStorage.getItem(profileKey)) ||
-          (profiles.length > 0 ? null : { id: 'admin', name: 'Parent' });
-        localStorage.setItem(profileKey, JSON.stringify(selectedProfile));
-        return { profiles, selectedProfile };
-      });
+  onProfileLoad = profiles => {
+    this.setState(prevState => {
+      const selectedProfile =
+        prevState.selectedProfile ||
+        JSON.parse(localStorage.getItem(profileKey)) ||
+        (profiles.length > 0 ? null : { id: 'admin', name: 'Parent' });
+      localStorage.setItem(profileKey, JSON.stringify(selectedProfile));
+      return { selectedProfile };
     });
-  }
-
-  componentWillUnmount() {
-    this.ref.off();
-  }
+  };
 
   selectProfile = profile => {
     localStorage.setItem(profileKey, JSON.stringify(profile));
@@ -54,46 +31,53 @@ class Main extends React.Component {
   };
 
   clearProfile = () => {
-    this.setState(prevState => {
-      let selectedProfile = null;
-      if (prevState.profiles.length > 0) {
-        localStorage.removeItem(profileKey);
-      } else {
-        selectedProfile = { id: 'admin', name: 'Parent' };
-        localStorage.setItem(profileKey, JSON.stringify(selectedProfile));
-      }
-      return { selectedProfile };
-    });
+    localStorage.removeItem(profileKey);
+    this.setState({ selectedProfile: null });
   };
 
   render() {
-    const { profiles, selectedProfile } = this.state;
+    const { selectedProfile } = this.state;
 
     return (
-      <React.Fragment>
-        {!!selectedProfile ? (
-          <React.Fragment>
-            {selectedProfile.id === 'admin' ? (
-              <Admin profiles={profiles} />
-            ) : (
-              <ChildScreen user={this.props.user} profile={selectedProfile} />
-            )}
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            {profiles.length > 0 ? (
-              <ProfileSelect
-                profiles={profiles}
-                selectProfile={this.selectProfile}
+      <FirebaseQuery path="profiles" on onChange={this.onProfileLoad} toArray>
+        {(profiles, loading) => {
+          return (
+            <React.Fragment>
+              <Header
+                selectedProfile={selectedProfile}
+                clearProfile={this.clearProfile}
               />
-            ) : (
-              <Admin profiles={profiles} />
-            )}
-          </React.Fragment>
-        )}
-      </React.Fragment>
+              {loading ? (
+                <Loading />
+              ) : (
+                <React.Fragment>
+                  {!!selectedProfile ? (
+                    <ShowProfile
+                      selectedProfile={selectedProfile}
+                      profiles={profiles}
+                    />
+                  ) : (
+                    <ProfileSelect
+                      profiles={profiles}
+                      selectProfile={this.selectProfile}
+                    />
+                  )}
+                </React.Fragment>
+              )}
+            </React.Fragment>
+          );
+        }}
+      </FirebaseQuery>
     );
   }
 }
 
-export default withUser(Main);
+export default Main;
+
+function ShowProfile({ selectedProfile, profiles }) {
+  if (selectedProfile.id === 'admin') {
+    return <Admin profiles={profiles} />;
+  } else {
+    return <ChildScreen profile={selectedProfile} />;
+  }
+}

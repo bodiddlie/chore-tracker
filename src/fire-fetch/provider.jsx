@@ -27,6 +27,7 @@ class FirebaseProvider extends React.Component {
 
     this.unsubscribe = app.auth().onAuthStateChanged(user => {
       if (user) {
+        /*
         const { uid } = user;
         const endpoint = `/families/${user.uid}`;
         app
@@ -43,9 +44,12 @@ class FirebaseProvider extends React.Component {
             }
             this.setState({ user, loading: false });
           });
+          */
+        this.setState({ user, loading: false });
       } else {
         this.setState({ user: null, loading: false });
       }
+      //this.setState({ user, loading: false });
     });
 
     this.setState({ app });

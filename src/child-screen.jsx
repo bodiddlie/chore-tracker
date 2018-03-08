@@ -6,7 +6,6 @@ import GoCheck from 'react-icons/lib/go/check';
 
 import { FirebaseRef, FirebaseQuery } from './fire-fetch';
 import { withUser } from './user';
-import Header from './header';
 import { Button } from './styles';
 
 const formatter = new Intl.NumberFormat('en-US', {
@@ -70,7 +69,6 @@ class ChildScreen extends React.Component {
               <FirebaseRef path="completedChores">
                 {adminCompleteRef => (
                   <Grid>
-                    <Header />
                     <Earnings>
                       You have earned {formatter.format(total)} so far!
                     </Earnings>

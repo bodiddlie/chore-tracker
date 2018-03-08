@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import Header from '../header';
 import Chores from './chores';
 import AddChore from './add-chore';
 import Profiles from './profiles';
@@ -38,7 +37,6 @@ class Admin extends React.Component {
 
     return (
       <Grid>
-        <Header />
         <Desktop>
           <ChoreContainer>
             <Heading>Chores</Heading>
