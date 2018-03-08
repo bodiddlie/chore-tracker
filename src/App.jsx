@@ -4,7 +4,7 @@ import { ThemeProvider } from 'styled-components';
 import ErrorBoundary from './error-boundary';
 import Main from './main';
 import { config } from './firebase';
-import { FirebaseProvider, RootRef } from './fire-fetch';
+import { FirebaseProvider, RootRef, AuthListener } from './fire-fetch';
 import Login from './login';
 import { Loading } from './shared';
 
@@ -24,23 +24,25 @@ class App extends React.Component {
           }}
         >
           <FirebaseProvider config={config}>
-            {(loading, user) => (
-              <React.Fragment>
-                {loading ? (
-                  <Loading />
-                ) : (
-                  <React.Fragment>
-                    {user ? (
-                      <RootRef path={`/families/${user.uid}`}>
-                        <Main />
-                      </RootRef>
-                    ) : (
-                      <Login />
-                    )}
-                  </React.Fragment>
-                )}
-              </React.Fragment>
-            )}
+            <AuthListener>
+              {user => (
+                <React.Fragment>
+                  {user === null ? (
+                    <Loading />
+                  ) : (
+                    <React.Fragment>
+                      {user ? (
+                        <RootRef path={`/families/${user.uid}`}>
+                          <Main />
+                        </RootRef>
+                      ) : (
+                        <Login />
+                      )}
+                    </React.Fragment>
+                  )}
+                </React.Fragment>
+              )}
+            </AuthListener>
           </FirebaseProvider>
         </ThemeProvider>
       </ErrorBoundary>

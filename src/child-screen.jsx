@@ -65,7 +65,7 @@ class ChildScreen extends React.Component {
             toArray
             onChange={this.onCompleteChange}
           >
-            {(completedChores, completeRef) => (
+            {(completedChores, loading, completeRef) => (
               <FirebaseRef path="completedChores">
                 {adminCompleteRef => (
                   <Grid>

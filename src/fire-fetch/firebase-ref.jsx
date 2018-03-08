@@ -3,19 +3,19 @@ import PropTypes from 'prop-types';
 
 class FirebaseRef extends React.Component {
   static contextTypes = {
-    app: PropTypes.object,
+    fbapp: PropTypes.object,
     rootPath: PropTypes.string,
   };
 
   getReferences() {
     const { path, paths } = this.props;
-    const { app, rootPath } = this.context;
+    const { fbapp, rootPath } = this.context;
 
     if (path) {
-      return [app.database().ref(`${rootPath}/${path}`)];
+      return [fbapp.database().ref(`${rootPath}/${path}`)];
     }
 
-    return paths.map(path => app.database().ref(`${rootPath}/${path}`));
+    return paths.map(path => fbapp.database().ref(`${rootPath}/${path}`));
   }
 
   render() {

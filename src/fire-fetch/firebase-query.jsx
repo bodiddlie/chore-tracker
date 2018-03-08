@@ -5,7 +5,7 @@ import { objectToArray } from '../util';
 
 class FirebaseQuery extends React.Component {
   static contextTypes = {
-    app: PropTypes.object,
+    fbapp: PropTypes.object,
     rootPath: PropTypes.string,
   };
 
@@ -15,12 +15,12 @@ class FirebaseQuery extends React.Component {
   };
 
   getReference() {
-    const { app, rootPath } = this.context;
+    const { fbapp, rootPath } = this.context;
     const { path, reference } = this.props;
     if (reference) {
       return reference;
     } else {
-      return app.database().ref(`${rootPath}/${path}`);
+      return fbapp.database().ref(`${rootPath}/${path}`);
     }
   }
 

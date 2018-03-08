@@ -4,70 +4,29 @@ import PropTypes from 'prop-types';
 
 class FirebaseProvider extends React.Component {
   state = {
-    user: null,
-    loading: true,
-    app: null,
+    fbapp: null,
   };
 
   static childContextTypes = {
-    user: PropTypes.object,
-    app: PropTypes.object,
+    fbapp: PropTypes.object,
   };
 
   getChildContext() {
-    return { user: this.state.user, app: this.state.app };
+    return { ...this.state };
   }
 
   componentDidMount() {
     const { config } = this.props;
 
-    const app = firebase.apps.length
+    const fbapp = firebase.apps.length
       ? firebase.apps[0]
       : firebase.initializeApp(config);
 
-    this.unsubscribe = app.auth().onAuthStateChanged(user => {
-      if (user) {
-        /*
-        const { uid } = user;
-        const endpoint = `/families/${user.uid}`;
-        app
-          .database()
-          .ref(endpoint)
-          .on('value', snapshot => {
-            const saved = snapshot.val();
-
-            if (!saved) {
-              app
-                .database()
-                .ref(endpoint)
-                .set({ uid });
-            }
-            this.setState({ user, loading: false });
-          });
-          */
-        this.setState({ user, loading: false });
-      } else {
-        this.setState({ user: null, loading: false });
-      }
-      //this.setState({ user, loading: false });
-    });
-
-    this.setState({ app });
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
+    this.setState({ fbapp });
   }
 
   render() {
-    const { render, children } = this.props;
-    const { loading, user } = this.state;
-
-    if (!!render) {
-      return render(loading, user);
-    } else {
-      return children(loading, user);
-    }
+    return this.state.fbapp === null ? null : this.props.children;
   }
 }
 
