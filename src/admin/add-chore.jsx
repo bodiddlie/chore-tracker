@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import TiPlus from 'react-icons/lib/ti/plus';
 
 import { db } from '../firebase';
-import { withUser } from '../user';
+import { withUser } from '../fire-fetch';
 import { TextBox, NumberField } from '../shared';
 import { Button } from '../styles';
 

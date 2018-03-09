@@ -4,8 +4,7 @@ import format from 'date-fns/format';
 import TiCancel from 'react-icons/lib/ti/cancel';
 import GoCheck from 'react-icons/lib/go/check';
 
-import { FirebaseRef, FirebaseQuery } from './fire-fetch';
-import { withUser } from './user';
+import { FirebaseRef, FirebaseQuery, withUser } from './fire-fetch';
 import { Button } from './styles';
 
 const formatter = new Intl.NumberFormat('en-US', {

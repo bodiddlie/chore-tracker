@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Chores from './chores';
 import AddChore from './add-chore';
 import Profiles from './profiles';
-import { withUser } from '../user';
+import { withUser } from '../fire-fetch';
 import { db } from '../firebase';
 import { objectToArray } from '../util';
 

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { db } from '../firebase';
 import { objectToArray } from '../util';
-import { withUser } from '../user';
+import { withUser } from '../fire-fetch';
 import Chore from './chore';
 
 class Chores extends React.Component {

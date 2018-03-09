@@ -8,7 +8,7 @@ import NumericInput from 'react-numeric-input';
 import format from 'date-fns/format';
 
 import { db } from '../firebase';
-import { withUser } from '../user';
+import { withUser } from '../fire-fetch';
 import { Button, TextButton, TextInput } from '../styles';
 
 class Chore extends React.Component {

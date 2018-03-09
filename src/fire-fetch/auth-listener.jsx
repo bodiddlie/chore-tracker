@@ -42,3 +42,21 @@ class AuthListener extends React.Component {
 }
 
 export default withFbApp(AuthListener);
+
+export class User extends React.Component {
+  static contextTypes = {
+    user: PropTypes.object,
+  };
+
+  render() {
+    return this.props.children(this.context.user);
+  }
+}
+
+export function withUser(Component) {
+  return class extends React.Component {
+    render() {
+      return <User>{user => <Component user={user} {...this.props} />}</User>;
+    }
+  };
+}

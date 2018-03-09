@@ -6,8 +6,8 @@ import TiPencil from 'react-icons/lib/ti/pencil';
 import TiTrash from 'react-icons/lib/ti/trash';
 import TiPlus from 'react-icons/lib/ti/plus';
 
+import { withUser } from '../fire-fetch';
 import { db } from '../firebase';
-import { withUser } from '../user';
 import { TextBox } from '../shared';
 import { Button, SmallButton, TextButton, TextInput } from '../styles';
 import { objectToArray } from '../util';
