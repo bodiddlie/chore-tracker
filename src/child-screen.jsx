@@ -4,7 +4,7 @@ import format from 'date-fns/format';
 import TiCancel from 'react-icons/lib/ti/cancel';
 import GoCheck from 'react-icons/lib/go/check';
 
-import { FirebaseRef, FirebaseQuery, withUser } from './fire-fetch';
+import { FirebaseRef, FirebaseQuery, withRootRef } from './fire-fetch';
 import { Button } from './styles';
 
 const formatter = new Intl.NumberFormat('en-US', {
@@ -25,7 +25,7 @@ class ChildScreen extends React.Component {
   };
 
   handleComplete = (completeRef, chore) => {
-    const { user, profile } = this.props;
+    const { rootPath, profile } = this.props;
 
     const { key } = completeRef.push();
     const newChore = {
@@ -37,10 +37,8 @@ class ChildScreen extends React.Component {
       paid: false,
     };
     const update = {
-      [`/families/${user.uid}/profiles/${
-        profile.id
-      }/completedChores/${key}`]: newChore,
-      [`/families/${user.uid}/completedChores/${key}`]: newChore,
+      [`${rootPath}/profiles/${profile.id}/completedChores/${key}`]: newChore,
+      [`${rootPath}/completedChores/${key}`]: newChore,
     };
 
     completeRef.root.update(update);
@@ -122,7 +120,7 @@ class ChildScreen extends React.Component {
   }
 }
 
-export default withUser(ChildScreen);
+export default withRootRef(ChildScreen);
 
 const Grid = styled.div`
   display: grid;
