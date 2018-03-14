@@ -2,8 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import TiPlus from 'react-icons/lib/ti/plus';
 
-import { db } from '../firebase';
-import { withUser } from '../fire-fetch';
+import { FirebaseRef, withRootRef } from '../fire-fetch';
 import { TextBox, NumberField } from '../shared';
 import { Button } from '../styles';
 
@@ -15,24 +14,24 @@ const initialState = {
 class AddChore extends React.Component {
   state = initialState;
 
-  handleSubmit = event => {
+  handleSubmit = (event, ref) => {
     event.preventDefault();
 
-    const { user } = this.props;
     const { name, value } = this.state;
+    const { rootPath } = this.props;
 
     let parsed = parseFloat(value);
 
     if (this.validate()) {
-      const { key } = db.ref(`/families/${user.uid}/chores`).push();
+      const { key } = ref.push();
 
       const chore = { name, value: parsed, id: key };
 
       const update = {
-        [`/families/${user.uid}/chores/${key}`]: chore,
+        [`${rootPath}/chores/${key}`]: chore,
       };
 
-      db.ref().update(update);
+      ref.root.update(update);
 
       this.setState(initialState);
     }
@@ -56,28 +55,32 @@ class AddChore extends React.Component {
     const { name, value } = this.state;
 
     return (
-      <Form onSubmit={this.handleSubmit}>
-        <TextBox
-          label="New Chore Name"
-          name="name"
-          value={name}
-          onChange={this.handleChange}
-        />
-        <NumberField
-          label="Value"
-          name="value"
-          value={value}
-          onChange={this.handleNumberChange}
-        />
-        <Button type="submit" disabled={!this.validate()} color="green">
-          <TiPlus />
-        </Button>
-      </Form>
+      <FirebaseRef path="chores">
+        {ref => (
+          <Form onSubmit={event => this.handleSubmit(event, ref)}>
+            <TextBox
+              label="New Chore Name"
+              name="name"
+              value={name}
+              onChange={this.handleChange}
+            />
+            <NumberField
+              label="Value"
+              name="value"
+              value={value}
+              onChange={this.handleNumberChange}
+            />
+            <Button type="submit" disabled={!this.validate()} color="green">
+              <TiPlus />
+            </Button>
+          </Form>
+        )}
+      </FirebaseRef>
     );
   }
 }
 
-export default withUser(AddChore);
+export default withRootRef(AddChore);
 
 const Form = styled.form`
   display: grid;
