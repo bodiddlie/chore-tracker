@@ -5,13 +5,7 @@ import FaFacebookSquare from 'react-icons/lib/fa/facebook-square';
 import FaTwitter from 'react-icons/lib/fa/twitter';
 import FaGithub from 'react-icons/lib/fa/github';
 
-import {
-  auth,
-  googleProvider,
-  facebookProvider,
-  twitterProvider,
-  githubProvider,
-} from './firebase';
+import { withSignIn } from './fire-fetch';
 import { TextBox } from './shared';
 
 class Login extends React.Component {
@@ -20,27 +14,18 @@ class Login extends React.Component {
     email: '',
     password: '',
     confirm: '',
-    displayName: '',
     showErrors: false,
   };
 
   handleSubmit = event => {
     event.preventDefault();
 
-    const { email, password, displayName } = this.state;
+    const { email, password } = this.state;
     this.setState({ showErrors: true });
 
     if (!this.validateForm()) return;
 
-    if (this.state.onLoginForm) {
-      auth.signInWithEmailAndPassword(email, password);
-    } else {
-      auth.createUserWithEmailAndPassword(email, password).then(user => {
-        user.updateProfile({
-          displayName,
-        });
-      });
-    }
+    this.props.signInEmail(email, password, !this.state.onLoginForm);
   };
 
   validateForm = () => {
@@ -49,7 +34,6 @@ class Login extends React.Component {
     } else {
       return (
         this.state.email.length > 0 &&
-        this.state.displayName.length > 0 &&
         this.state.password.length >= 6 &&
         this.state.password === this.state.confirm
       );
@@ -60,36 +44,8 @@ class Login extends React.Component {
     this.setState({ [target.name]: target.value });
   };
 
-  handleGoogle = () => {
-    if (window.innerWidth > 768) {
-      auth.signInWithPopup(googleProvider);
-    } else {
-      auth.signInWithRedirect(googleProvider).catch(alert);
-    }
-  };
-
-  handleFacebook = () => {
-    if (window.innerWidth > 768) {
-      auth.signInWithPopup(facebookProvider);
-    } else {
-      auth.signInWithRedirect(facebookProvider);
-    }
-  };
-
-  handleTwitter = () => {
-    if (window.innerWidth > 768) {
-      auth.signInWithPopup(twitterProvider);
-    } else {
-      auth.signInWithRedirect(twitterProvider);
-    }
-  };
-
-  handleGithub = () => {
-    if (window.innerWidth > 768) {
-      auth.signInWithPopup(githubProvider);
-    } else {
-      auth.signInWithRedirect(githubProvider);
-    }
+  signIn = method => {
+    this.props.signInProvider(method, window.innerWidth <= 768);
   };
 
   toggleForm = () => {
@@ -99,7 +55,7 @@ class Login extends React.Component {
   };
 
   render() {
-    const { onLoginForm, email, password, confirm, displayName } = this.state;
+    const { onLoginForm, email, password, confirm } = this.state;
 
     return (
       <Wrapper>
@@ -139,12 +95,6 @@ class Login extends React.Component {
           ) : (
             <React.Fragment>
               <TextBox
-                label="Display Name"
-                value={displayName}
-                name="displayName"
-                onChange={this.handleChange}
-              />
-              <TextBox
                 label="Password"
                 value={password}
                 name="password"
@@ -169,16 +119,19 @@ class Login extends React.Component {
             </ToggleButton>
           </SubmitRow>
           <ButtonRow>
-            <ProviderButton bg="#DD4B39" onClick={() => this.handleGoogle()}>
+            <ProviderButton bg="#DD4B39" onClick={() => this.signIn('google')}>
               <FaGoogle /> Log In with Google
             </ProviderButton>
-            <ProviderButton bg="#4267B2" onClick={() => this.handleFacebook()}>
+            <ProviderButton
+              bg="#4267B2"
+              onClick={() => this.signIn('facebook')}
+            >
               <FaFacebookSquare /> Log In with Facebook
             </ProviderButton>
-            <ProviderButton bg="#55ACEE" onClick={() => this.handleTwitter()}>
+            <ProviderButton bg="#55ACEE" onClick={() => this.signIn('twitter')}>
               <FaTwitter /> Log In with Twitter
             </ProviderButton>
-            <ProviderButton bg="#444444" onClick={() => this.handleGithub()}>
+            <ProviderButton bg="#444444" onClick={() => this.signIn('github')}>
               <FaGithub /> Log In with GitHub
             </ProviderButton>
           </ButtonRow>
@@ -188,7 +141,7 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+export default withSignIn(Login);
 
 const Wrapper = styled.div`
   display: grid;

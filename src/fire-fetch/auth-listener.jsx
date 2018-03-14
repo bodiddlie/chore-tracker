@@ -1,7 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import firebase from 'firebase';
 
 import { withFbApp } from './provider';
+
+const providers = {
+  google: new firebase.auth.GoogleAuthProvider(),
+  facebook: new firebase.auth.FacebookAuthProvider(),
+  twitter: new firebase.auth.TwitterAuthProvider(),
+  github: new firebase.auth.GithubAuthProvider(),
+};
 
 class AuthListener extends React.Component {
   state = {
@@ -9,11 +17,17 @@ class AuthListener extends React.Component {
   };
 
   static childContextTypes = {
-    user: PropTypes.object,
+    user: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
+    signInProvider: PropTypes.func,
+    signInEmail: PropTypes.func,
   };
 
   getChildContext() {
-    return { ...this.state };
+    return {
+      user: this.state.user,
+      signInProvider: this.signInProvider,
+      signInEmail: this.signInEmail,
+    };
   }
 
   componentDidMount() {
@@ -29,6 +43,25 @@ class AuthListener extends React.Component {
   componentWillUnmount() {
     this.unsubscribe();
   }
+
+  signInProvider = (method, redirect) => {
+    if (redirect) {
+      this.props.fbapp
+        .auth()
+        .signInWithRedirect(providers[method])
+        .catch(alert);
+    } else {
+      this.props.fbapp.auth().signInWithPopup(providers[method]);
+    }
+  };
+
+  signInEmail = (email, password, isCreating) => {
+    if (isCreating) {
+      this.props.fbapp.auth().createUserWithEmailAndPassword(email, password);
+    } else {
+      this.props.fbapp.auth().signInWithEmailAndPassword(email, password);
+    }
+  };
 
   render() {
     const { render, children } = this.props;
@@ -57,6 +90,27 @@ export function withUser(Component) {
   return class extends React.Component {
     render() {
       return <User>{user => <Component user={user} {...this.props} />}</User>;
+    }
+  };
+}
+
+export class SignIn extends React.Component {
+  static contextTypes = {
+    signInProvider: PropTypes.func,
+    signInEmail: PropTypes.func,
+  };
+
+  render() {
+    return this.props.children({ ...this.context });
+  }
+}
+
+export function withSignIn(Component) {
+  return class extends React.Component {
+    render() {
+      return (
+        <SignIn>{funcs => <Component {...funcs} {...this.props} />}</SignIn>
+      );
     }
   };
 }
