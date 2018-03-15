@@ -1,47 +1,28 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { db } from '../firebase';
-import { objectToArray } from '../util';
-import { withUser } from '../fire-fetch';
+import { FirebaseQuery } from '../fire-fetch';
 import Chore from './chore';
 
-class Chores extends React.Component {
-  state = {
-    chores: [],
-  };
-
-  componentDidMount() {
-    const { user } = this.props;
-    this.ref = db.ref(`/families/${user.uid}/chores`);
-    this.ref.on('value', snapshot => {
-      const chores = objectToArray(snapshot.val());
-      this.setState({ chores });
-    });
-  }
-
-  componentWillUnmount() {
-    this.ref.off();
-  }
-
-  render() {
-    const { chores } = this.state;
-
-    return (
-      <div>
-        <Grid>
-          <Heading>Name</Heading>
-          <Heading>Value</Heading>
-          <Heading>Last Completed</Heading>
-          <Heading>Actions</Heading>
-        </Grid>
-        {chores.map(c => <Chore key={c.id} chore={c} />)}
-      </div>
-    );
-  }
+function Chores() {
+  return (
+    <FirebaseQuery path="chores" on toArray>
+      {chores => (
+        <div>
+          <Grid>
+            <Heading>Name</Heading>
+            <Heading>Value</Heading>
+            <Heading>Last Completed</Heading>
+            <Heading>Actions</Heading>
+          </Grid>
+          {chores.map(c => <Chore key={c.id} chore={c} />)}
+        </div>
+      )}
+    </FirebaseQuery>
+  );
 }
 
-export default withUser(Chores);
+export default Chores;
 
 const Grid = styled.div`
   display: grid;
