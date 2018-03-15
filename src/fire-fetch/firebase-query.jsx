@@ -36,7 +36,7 @@ class FirebaseQuery extends React.Component {
       this.ref = this.ref.orderByChild(orderByChild);
     }
 
-    if (equalTo) {
+    if (equalTo || equalTo === false) {
       this.ref = this.ref.equalTo(equalTo);
     }
 
