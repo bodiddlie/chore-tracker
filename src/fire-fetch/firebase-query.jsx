@@ -20,9 +20,29 @@ class FirebaseQuery extends React.Component {
   }
 
   buildQuery() {
-    const { on, toArray, onChange, once } = this.props;
+    const {
+      on,
+      toArray,
+      onChange,
+      once,
+      orderByChild,
+      equalTo,
+      limitToLast,
+    } = this.props;
 
     this.ref = this.getReference();
+
+    if (orderByChild) {
+      this.ref = this.ref.orderByChild(orderByChild);
+    }
+
+    if (equalTo) {
+      this.ref = this.ref.equalTo(equalTo);
+    }
+
+    if (limitToLast) {
+      this.ref = this.ref.limitToLast(limitToLast);
+    }
 
     if (on) {
       this.ref.on('value', snapshot => {

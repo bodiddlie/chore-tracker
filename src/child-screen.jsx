@@ -33,7 +33,7 @@ class ChildScreen extends React.Component {
       choreId: chore.id,
       value: chore.value,
       completedDate: new Date(),
-      completedBy: profile.id,
+      completedBy: profile.name,
       paid: false,
     };
     const update = {
