@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import format from 'date-fns/format';
 import TiCancel from 'react-icons/lib/ti/cancel';
 import GoCheck from 'react-icons/lib/go/check';
+import { FirebaseRef, FirebaseQuery, withRootRef } from 'fire-fetch';
 
-import { FirebaseRef, FirebaseQuery, withRootRef } from './fire-fetch';
 import { Button } from './styles';
 
 const formatter = new Intl.NumberFormat('en-US', {

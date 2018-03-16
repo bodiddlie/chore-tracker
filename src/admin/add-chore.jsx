@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import TiPlus from 'react-icons/lib/ti/plus';
+import { FirebaseRef, withRootRef } from 'fire-fetch';
 
-import { FirebaseRef, withRootRef } from '../fire-fetch';
 import { TextBox, NumberField } from '../shared';
 import { Button } from '../styles';
 

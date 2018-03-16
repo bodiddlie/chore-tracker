@@ -1,6 +1,6 @@
 import React from 'react';
+import { FirebaseQuery } from 'fire-fetch';
 
-import { FirebaseQuery } from './fire-fetch';
 import Admin from './admin';
 import ProfileSelect from './profile-select';
 import ChildScreen from './child-screen';

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import { FirebaseQuery } from 'fire-fetch';
 
-import { FirebaseQuery } from '../fire-fetch';
 import Chore from './chore';
 
 function Chores() {

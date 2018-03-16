@@ -2,8 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import FaSignOut from 'react-icons/lib/fa/sign-out';
 import FaUser from 'react-icons/lib/fa/user';
-
-import { auth } from './firebase';
+import { withFbApp } from 'fire-fetch';
 
 class Header extends React.Component {
   state = {
@@ -46,14 +45,14 @@ class Header extends React.Component {
                 <MenuButton onClick={clearProfile}>
                   <FaUser /> Switch Profile
                 </MenuButton>
-                <MenuButton onClick={() => auth.signOut()}>
+                <MenuButton onClick={() => this.props.fbapp.auth().signOut()}>
                   <FaSignOut />Sign Out
                 </MenuButton>
               </Menu>
             )}
           </MenuContainer>
         ) : (
-          <Button onClick={() => auth.signOut()}>
+          <Button onClick={() => this.props.fbapp.auth().signOut()}>
             <FaSignOut /> Sign Out
           </Button>
         )}
@@ -62,7 +61,7 @@ class Header extends React.Component {
   }
 }
 
-export default Header;
+export default withFbApp(Header);
 
 const Wrapper = styled.div`
   background: ${props => props.theme.gray};

@@ -1,10 +1,10 @@
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
+import { FirebaseProvider, RootRef, AuthListener } from 'fire-fetch';
 
 import ErrorBoundary from './error-boundary';
 import Main from './main';
 import { config } from './firebase';
-import { FirebaseProvider, RootRef, AuthListener } from './fire-fetch';
 import Login from './login';
 import { Loading } from './shared';
 

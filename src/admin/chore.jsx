@@ -6,8 +6,8 @@ import TiPencil from 'react-icons/lib/ti/pencil';
 import TiTrash from 'react-icons/lib/ti/trash';
 import NumericInput from 'react-numeric-input';
 import format from 'date-fns/format';
+import { FirebaseRef, FirebaseQuery } from 'fire-fetch';
 
-import { FirebaseRef, FirebaseQuery } from '../fire-fetch';
 import { Button, TextButton, TextInput } from '../styles';
 
 class Chore extends React.Component {

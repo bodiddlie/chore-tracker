@@ -4,9 +4,9 @@ import TiCancel from 'react-icons/lib/ti/cancel';
 import TiDownload from 'react-icons/lib/ti/download';
 import TiPencil from 'react-icons/lib/ti/pencil';
 import TiTrash from 'react-icons/lib/ti/trash';
+import { FirebaseRef, FirebaseQuery } from 'fire-fetch';
 
 import { TextButton, TextInput, Button } from '../styles';
-import { FirebaseRef, FirebaseQuery } from '../fire-fetch';
 
 const formatter = new Intl.NumberFormat('en-US', {
   style: 'currency',

@@ -4,8 +4,8 @@ import FaGoogle from 'react-icons/lib/fa/google';
 import FaFacebookSquare from 'react-icons/lib/fa/facebook-square';
 import FaTwitter from 'react-icons/lib/fa/twitter';
 import FaGithub from 'react-icons/lib/fa/github';
+import { withSignIn } from 'fire-fetch';
 
-import { withSignIn } from './fire-fetch';
 import { TextBox } from './shared';
 
 class Login extends React.Component {
