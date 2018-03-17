@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import FaSignOut from 'react-icons/lib/fa/sign-out';
 import FaUser from 'react-icons/lib/fa/user';
-import { withFbApp } from 'fire-fetch';
+import { SignOut } from 'fire-fetch';
 
 class Header extends React.Component {
   state = {
@@ -32,36 +32,42 @@ class Header extends React.Component {
     const { selectedProfile, clearProfile } = this.props;
 
     return (
-      <Wrapper>
-        {!!selectedProfile ? (
-          <MenuContainer
-            innerRef={node => {
-              this.node = node;
-            }}
-          >
-            <Button onClick={this.handleClick}>{selectedProfile.name}</Button>
-            {open && (
-              <Menu>
-                <MenuButton onClick={clearProfile}>
-                  <FaUser /> Switch Profile
-                </MenuButton>
-                <MenuButton onClick={() => this.props.fbapp.auth().signOut()}>
-                  <FaSignOut />Sign Out
-                </MenuButton>
-              </Menu>
+      <SignOut>
+        {signOut => (
+          <Wrapper>
+            {!!selectedProfile ? (
+              <MenuContainer
+                innerRef={node => {
+                  this.node = node;
+                }}
+              >
+                <Button onClick={this.handleClick}>
+                  {selectedProfile.name}
+                </Button>
+                {open && (
+                  <Menu>
+                    <MenuButton onClick={clearProfile}>
+                      <FaUser /> Switch Profile
+                    </MenuButton>
+                    <MenuButton onClick={signOut}>
+                      <FaSignOut />Sign Out
+                    </MenuButton>
+                  </Menu>
+                )}
+              </MenuContainer>
+            ) : (
+              <Button onClick={signOut}>
+                <FaSignOut /> Sign Out
+              </Button>
             )}
-          </MenuContainer>
-        ) : (
-          <Button onClick={() => this.props.fbapp.auth().signOut()}>
-            <FaSignOut /> Sign Out
-          </Button>
+          </Wrapper>
         )}
-      </Wrapper>
+      </SignOut>
     );
   }
 }
 
-export default withFbApp(Header);
+export default Header;
 
 const Wrapper = styled.div`
   background: ${props => props.theme.gray};
