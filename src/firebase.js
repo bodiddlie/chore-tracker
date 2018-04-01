@@ -1,6 +1,4 @@
-import firebase from 'firebase';
-
-let config = {
+export const config = {
   apiKey: 'AIzaSyBHZhiKz8MDP-Rmc0VXzdureDfOKWXGh_s',
   authDomain: 'chore-tracker-cdb66.firebaseapp.com',
   databaseURL: 'https://chore-tracker-cdb66.firebaseio.com',
@@ -9,6 +7,7 @@ let config = {
   messagingSenderId: '244552897910',
 };
 
+/*
 export const firebaseApp = firebase.initializeApp(config);
 
 export const db = firebaseApp.database();
@@ -22,3 +21,4 @@ export const storageKey = 'chore-tracker-regnipelk';
 export const isAuthenticated = () => {
   return !!auth.currentUser || !!localStorage.getItem(storageKey);
 };
+*/

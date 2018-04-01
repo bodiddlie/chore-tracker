@@ -1,49 +1,14 @@
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
-import PropTypes from 'prop-types';
+import { FirebaseProvider, RootRef, AuthListener } from 'fire-fetch';
 
 import ErrorBoundary from './error-boundary';
 import Main from './main';
-import { auth, db } from './firebase';
+import { config } from './firebase';
 import Login from './login';
+import { Loading } from './shared';
 
 class App extends React.Component {
-  state = {
-    user: null,
-    loading: true,
-  };
-
-  static childContextTypes = {
-    user: PropTypes.object,
-  };
-
-  getChildContext() {
-    return { user: this.state.user };
-  }
-
-  componentDidMount() {
-    this.unsubscribe = auth.onAuthStateChanged(user => {
-      if (user) {
-        const { uid } = user;
-        const endpoint = `/families/${user.uid}`;
-        db.ref(endpoint).on('value', snapshot => {
-          const saved = snapshot.val();
-
-          if (!saved) {
-            db.ref(endpoint).set({ uid });
-          }
-          this.setState({ user, loading: false });
-        });
-      } else {
-        this.setState({ user: null, loading: false });
-      }
-    });
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
-
   render() {
     return (
       <ErrorBoundary message="Something is broken">
@@ -58,13 +23,27 @@ class App extends React.Component {
             lightgray: '#cdcdcd',
           }}
         >
-          {this.state.loading ? (
-            <Loading />
-          ) : (
-            <React.Fragment>
-              {!!this.state.user ? <Main /> : <Login />}
-            </React.Fragment>
-          )}
+          <FirebaseProvider config={config}>
+            <AuthListener>
+              {user => (
+                <React.Fragment>
+                  {user === null ? (
+                    <Loading />
+                  ) : (
+                    <React.Fragment>
+                      {user ? (
+                        <RootRef path={`/families/${user.uid}`}>
+                          <Main />
+                        </RootRef>
+                      ) : (
+                        <Login />
+                      )}
+                    </React.Fragment>
+                  )}
+                </React.Fragment>
+              )}
+            </AuthListener>
+          </FirebaseProvider>
         </ThemeProvider>
       </ErrorBoundary>
     );
@@ -72,9 +51,3 @@ class App extends React.Component {
 }
 
 export default App;
-
-const Loading = () => (
-  <div>
-    <h1>Loading...</h1>
-  </div>
-);

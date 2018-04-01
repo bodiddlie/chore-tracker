@@ -6,9 +6,8 @@ import TiPencil from 'react-icons/lib/ti/pencil';
 import TiTrash from 'react-icons/lib/ti/trash';
 import NumericInput from 'react-numeric-input';
 import format from 'date-fns/format';
+import { FirebaseRef, FirebaseQuery } from 'fire-fetch';
 
-import { db } from '../firebase';
-import { withUser } from '../user';
 import { Button, TextButton, TextInput } from '../styles';
 
 class Chore extends React.Component {
@@ -17,52 +16,6 @@ class Chore extends React.Component {
     localName: this.props.chore.name,
     localValue: this.props.chore.value,
     valueClick: false,
-    completedBy: '',
-  };
-
-  componentDidMount() {
-    const { user, chore } = this.props;
-    this.bindKeyPress();
-    this.ref = db.ref(`/families/${user.uid}/chores/${chore.id}`);
-    this.lastCompletedRef = db
-      .ref(`/families/${user.uid}/completedChores`)
-      .orderByChild('choreId')
-      .equalTo(chore.id)
-      .limitToLast(1);
-    this.lastCompletedRef.on('value', snapshot => {
-      snapshot.forEach(child => {
-        const { completedBy, completedDate } = child.val();
-        db
-          .ref(`/families/${user.uid}/profiles/${completedBy}`)
-          .once('value')
-          .then(snapshot => {
-            const { name } = snapshot.val();
-            this.setState({
-              completedBy: `${name} @ ${format(completedDate, 'MM/DD')}`,
-            });
-          });
-      });
-    });
-  }
-
-  componentWillUnmount() {
-    this.unbindKeyPress();
-    this.ref.off();
-    this.lastCompletedRef.off();
-  }
-
-  bindKeyPress() {
-    document.addEventListener('keypress', this.handleKeyPress, false);
-  }
-
-  unbindKeyPress() {
-    document.removeEventListener('keypress', this.handleKeyPress);
-  }
-
-  handleKeyPress = e => {
-    if (this.state.editing && e.keyCode === 13) {
-      this.handleSave(e);
-    }
   };
 
   handleChange = ({ target }) => {
@@ -77,10 +30,6 @@ class Chore extends React.Component {
     this.setState({ editing: true, valueClick });
   };
 
-  handleDelete = () => {
-    this.ref.remove();
-  };
-
   handleCancel = () => {
     const { chore: { name, value } } = this.props;
     this.setState({
@@ -91,14 +40,14 @@ class Chore extends React.Component {
     });
   };
 
-  handleSave = event => {
+  handleSave = (event, ref) => {
     event.preventDefault();
     const { localName, localValue } = this.state;
     const update = {
       name: localName,
       value: localValue,
     };
-    this.ref.update(update);
+    ref.update(update);
     this.setState({ editing: false, valueClick: false });
   };
 
@@ -119,103 +68,103 @@ class Chore extends React.Component {
   };
 
   render() {
-    const { chore: { name, value } } = this.props;
-    const { editing, localName, localValue, completedBy } = this.state;
+    const { chore: { id, name, value } } = this.props;
+    const { editing, localName, localValue } = this.state;
 
     return (
-      <Wrapper>
-        <EditableText
-          name="localName"
-          value={editing ? localName : name}
-          onChange={this.handleChange}
-          innerRef={i => (this.input = i)}
-          onFocus={this.moveToEnd}
-          label="Name"
-          onClick={() => this.handleEdit(false)}
-          editing={editing}
-        />
-        <EditableNumber
-          name="localValue"
-          value={editing ? localValue : value}
-          onChange={this.handleNumberChange}
-          innerRef={i => (this.value = i)}
-          onFocus={this.moveToEnd}
-          onClick={() => this.handleEdit(true)}
-          editing={editing}
-        />
-        <Last>{completedBy}</Last>
-        {editing ? (
-          <React.Fragment>
-            <Actions>
-              <Button onClick={this.handleCancel} color="yellow">
-                <TiCancel />
-              </Button>
-              <Button onClick={this.handleSave} color="green">
-                <TiDownload />
-              </Button>
-            </Actions>
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            <Actions>
-              <Button onClick={() => this.handleEdit(false)}>
-                <TiPencil />
-              </Button>
-              <Button onClick={this.handleDelete} color="red">
-                <TiTrash />
-              </Button>
-            </Actions>
-          </React.Fragment>
+      <FirebaseRef path={`chores/${id}`}>
+        {ref => (
+          <Wrapper onSubmit={event => this.handleSave(event, ref)}>
+            {editing ? (
+              <React.Fragment>
+                <TextInput
+                  name="localName"
+                  value={localName}
+                  onChange={this.handleChange}
+                  innerRef={i => (this.input = i)}
+                  onFocus={this.moveToEnd}
+                />
+                <NumericInput
+                  name="localValue"
+                  value={localValue}
+                  step={0.01}
+                  min={0}
+                  precision={2}
+                  style={false} //eslint-disable-line
+                  className="chore-value-input"
+                  onChange={this.handleNumberChange}
+                  ref={i => (this.value = i)}
+                  onFocus={this.moveToEnd}
+                />
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <TextButton onClick={() => this.handleEdit(false)}>
+                  {name}
+                </TextButton>
+                <TextButton onClick={() => this.handleEdit(true)}>
+                  ${value.toFixed(2)}
+                </TextButton>
+              </React.Fragment>
+            )}
+            <LastCompleted choreId={id} />
+            {editing ? (
+              <React.Fragment>
+                <Actions>
+                  <Button onClick={this.handleCancel} color="yellow">
+                    <TiCancel />
+                  </Button>
+                  <Button type="submit" color="green">
+                    <TiDownload />
+                  </Button>
+                </Actions>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <Actions>
+                  <Button onClick={() => this.handleEdit(false)}>
+                    <TiPencil />
+                  </Button>
+                  <Button onClick={() => ref.remove()} color="red">
+                    <TiTrash />
+                  </Button>
+                </Actions>
+              </React.Fragment>
+            )}
+          </Wrapper>
         )}
-      </Wrapper>
+      </FirebaseRef>
     );
   }
 }
 
-export default withUser(Chore);
+export default Chore;
 
-function EditableText(props) {
-  const { name, value, onChange, innerRef, onFocus, onClick, editing } = props;
-
-  if (editing) {
-    return (
-      <TextInput
-        name={name}
-        value={value}
-        onChange={onChange}
-        innerRef={innerRef}
-        onFocus={onFocus}
-      />
-    );
-  } else {
-    return <TextButton onClick={onClick}>{value}</TextButton>;
-  }
+function LastCompleted({ choreId }) {
+  return (
+    <FirebaseQuery
+      path="completedChores"
+      orderByChild="choreId"
+      equalTo={choreId}
+      limitToLast={1}
+      on
+      toArray
+    >
+      {lastCompleted => {
+        if (lastCompleted.length > 0) {
+          const { completedBy, completedDate } = lastCompleted[0];
+          return (
+            <Last>{`${completedBy} @ ${format(completedDate, 'MM/DD')}`}</Last>
+          );
+        } else {
+          return <Last />;
+        }
+      }}
+    </FirebaseQuery>
+  );
 }
 
-function EditableNumber(props) {
-  const { name, value, onChange, innerRef, onFocus, onClick, editing } = props;
-
-  if (editing) {
-    return (
-      <NumericInput
-        name={name}
-        value={value}
-        step={0.01}
-        min={0}
-        precision={2}
-        style={false} //eslint-disable-line
-        className="chore-value-input"
-        onChange={onChange}
-        ref={innerRef}
-        onFocus={onFocus}
-      />
-    );
-  } else {
-    return <TextButton onClick={onClick}>${value.toFixed(2)}</TextButton>;
-  }
-}
-
-const Wrapper = styled.div`
+const Wrapper = styled.form`
   display: grid;
   grid-template-columns: repeat(3, 1fr) 80px;
   grid-column-gap: 1rem;

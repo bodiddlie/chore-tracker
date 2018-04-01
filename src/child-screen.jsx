@@ -3,11 +3,8 @@ import styled from 'styled-components';
 import format from 'date-fns/format';
 import TiCancel from 'react-icons/lib/ti/cancel';
 import GoCheck from 'react-icons/lib/go/check';
+import { FirebaseRef, FirebaseQuery, withRootRef } from 'fire-fetch';
 
-import { db } from './firebase';
-import { objectToArray } from './util';
-import { withUser } from './user';
-import Header from './header';
 import { Button } from './styles';
 
 const formatter = new Intl.NumberFormat('en-US', {
@@ -17,106 +14,113 @@ const formatter = new Intl.NumberFormat('en-US', {
 
 class ChildScreen extends React.Component {
   state = {
-    chores: [],
-    completedChores: [],
     total: 0,
   };
 
-  componentDidMount() {
-    const { user, profile } = this.props;
-    this.choreRef = db.ref(`/families/${user.uid}/chores`);
-    this.completeRef = db.ref(
-      `/families/${user.uid}/profiles/${profile.id}/completedChores`
-    );
-    this.adminCompleteRef = db.ref(`/families/${user.uid}/completedChores`);
+  onCompleteChange = completed => {
+    const total = completed.reduce((prev, cur) => {
+      return prev + cur.value;
+    }, 0);
+    this.setState({ total });
+  };
 
-    this.choreRef.on('value', snapshot => {
-      const chores = objectToArray(snapshot.val());
-      this.setState({ chores });
-    });
+  handleComplete = (completeRef, chore) => {
+    const { rootPath, profile } = this.props;
 
-    this.completeRef.on('value', snapshot => {
-      const completedChores = objectToArray(snapshot.val());
-      const total = completedChores.reduce((prev, cur) => {
-        return prev + cur.value;
-      }, 0);
-      this.setState({ completedChores, total });
-    });
-  }
-
-  componentWillUnmount() {
-    this.choreRef.off();
-    this.completeRef.off();
-    this.adminCompleteRef.off();
-  }
-
-  handleComplete = chore => {
-    const { user, profile } = this.props;
-
-    const { key } = this.completeRef.push();
+    const { key } = completeRef.push();
     const newChore = {
       id: key,
       choreId: chore.id,
       value: chore.value,
       completedDate: new Date(),
-      completedBy: profile.id,
+      completedBy: profile.name,
       paid: false,
     };
     const update = {
-      [`/families/${user.uid}/profiles/${
-        profile.id
-      }/completedChores/${key}`]: newChore,
-      [`/families/${user.uid}/completedChores/${key}`]: newChore,
+      [`${rootPath}/profiles/${profile.id}/completedChores/${key}`]: newChore,
+      [`${rootPath}/completedChores/${key}`]: newChore,
     };
 
-    db.ref().update(update);
+    completeRef.root.update(update);
   };
 
-  handleDelete = chore => {
-    this.completeRef.child(chore.id).remove();
-    this.adminCompleteRef.child(chore.id).remove();
+  handleDelete = (chore, completeRef, adminCompleteRef) => {
+    completeRef.child(chore.id).remove();
+    adminCompleteRef.child(chore.id).remove();
   };
 
   render() {
-    const { chores, completedChores, total } = this.state;
+    const { profile } = this.props;
+    const { total } = this.state;
 
     return (
-      <Grid>
-        <Header />
-        <Earnings>You have earned {formatter.format(total)} so far!</Earnings>
-        <ChoreList>
-          {chores.map(c => (
-            <Chore key={c.id}>
-              <Details>
-                {c.name} - {formatter.format(c.value)}
-              </Details>
-              <Completed>
-                {completedChores.filter(cc => c.id === cc.choreId).map(ch => (
-                  <Mark key={ch.id}>
-                    <span>
-                      {format(ch.completedDate || new Date(), 'MM/DD')}{' '}
-                    </span>
-                    <MarkButton onClick={() => this.handleDelete(ch)}>
-                      <TiCancel />
-                    </MarkButton>
-                  </Mark>
-                ))}
-              </Completed>
-              <CompleteButton
-                onClick={() => this.handleComplete(c)}
-                color="green"
-              >
-                <GoCheck />
-              </CompleteButton>
-            </Chore>
-          ))}
-        </ChoreList>
-      </Grid>
+      <FirebaseQuery path="/chores" on toArray>
+        {chores => (
+          <FirebaseQuery
+            path={`/profiles/${profile.id}/completedChores`}
+            on
+            toArray
+            onChange={this.onCompleteChange}
+          >
+            {(completedChores, loading, completeRef) => (
+              <FirebaseRef path="completedChores">
+                {adminCompleteRef => (
+                  <Grid>
+                    <Earnings>
+                      You have earned {formatter.format(total)} so far!
+                    </Earnings>
+                    <ChoreList>
+                      {chores.map(c => (
+                        <Chore key={c.id}>
+                          <Details>
+                            {c.name} - {formatter.format(c.value)}
+                          </Details>
+                          <Completed>
+                            {completedChores
+                              .filter(cc => c.id === cc.choreId)
+                              .map(ch => (
+                                <Mark key={ch.id}>
+                                  <span>
+                                    {format(
+                                      ch.completedDate || new Date(),
+                                      'MM/DD'
+                                    )}{' '}
+                                  </span>
+                                  <MarkButton
+                                    onClick={() =>
+                                      this.handleDelete(
+                                        ch,
+                                        completeRef,
+                                        adminCompleteRef
+                                      )
+                                    }
+                                  >
+                                    <TiCancel />
+                                  </MarkButton>
+                                </Mark>
+                              ))}
+                          </Completed>
+                          <CompleteButton
+                            onClick={() => this.handleComplete(completeRef, c)}
+                            color="green"
+                          >
+                            <GoCheck />
+                          </CompleteButton>
+                        </Chore>
+                      ))}
+                    </ChoreList>
+                  </Grid>
+                )}
+              </FirebaseRef>
+            )}
+          </FirebaseQuery>
+        )}
+      </FirebaseQuery>
     );
   }
 }
 
-export default withUser(ChildScreen);
+export default withRootRef(ChildScreen);
 
 const Grid = styled.div`
   display: grid;

@@ -1,17 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
 import FaSignOut from 'react-icons/lib/fa/sign-out';
 import FaUser from 'react-icons/lib/fa/user';
-
-import { auth } from './firebase';
+import { SignOut } from 'fire-fetch';
 
 class Header extends React.Component {
-  static contextTypes = {
-    selectedProfile: PropTypes.object,
-    clearProfile: PropTypes.func,
-  };
-
   state = {
     open: false,
   };
@@ -36,34 +29,40 @@ class Header extends React.Component {
 
   render() {
     const { open } = this.state;
-    const { selectedProfile, clearProfile } = this.context;
+    const { selectedProfile, clearProfile } = this.props;
 
     return (
-      <Wrapper>
-        {!!selectedProfile ? (
-          <MenuContainer
-            innerRef={node => {
-              this.node = node;
-            }}
-          >
-            <Button onClick={this.handleClick}>{selectedProfile.name}</Button>
-            {open && (
-              <Menu>
-                <MenuButton onClick={clearProfile}>
-                  <FaUser /> Switch Profile
-                </MenuButton>
-                <MenuButton onClick={() => auth.signOut()}>
-                  <FaSignOut />Sign Out
-                </MenuButton>
-              </Menu>
+      <SignOut>
+        {signOut => (
+          <Wrapper>
+            {!!selectedProfile ? (
+              <MenuContainer
+                innerRef={node => {
+                  this.node = node;
+                }}
+              >
+                <Button onClick={this.handleClick}>
+                  {selectedProfile.name}
+                </Button>
+                {open && (
+                  <Menu>
+                    <MenuButton onClick={clearProfile}>
+                      <FaUser /> Switch Profile
+                    </MenuButton>
+                    <MenuButton onClick={signOut}>
+                      <FaSignOut />Sign Out
+                    </MenuButton>
+                  </Menu>
+                )}
+              </MenuContainer>
+            ) : (
+              <Button onClick={signOut}>
+                <FaSignOut /> Sign Out
+              </Button>
             )}
-          </MenuContainer>
-        ) : (
-          <Button onClick={() => auth.signOut()}>
-            <FaSignOut /> Sign Out
-          </Button>
+          </Wrapper>
         )}
-      </Wrapper>
+      </SignOut>
     );
   }
 }

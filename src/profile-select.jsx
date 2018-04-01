@@ -1,10 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
+import { FirebaseQuery } from 'fire-fetch';
 
-import Header from './header';
-import { db } from './firebase';
 import { objectToArray } from './util';
-import { withUser } from './user';
+import { Loading } from './shared';
 
 const formatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -21,43 +20,43 @@ class ProfileSelect extends React.Component {
     profiles: [],
   };
 
-  componentDidMount() {
-    const { user } = this.props;
-    this.ref = db.ref(`/families/${user.uid}/profiles`);
-    this.ref.on('value', snapshot => {
-      const ps = objectToArray(snapshot.val());
-      const profiles = ps.map(p => {
-        const total = objectToArray(p.completedChores).reduce(
-          (prev, cur) => prev + cur.value,
-          0
-        );
-        return { id: p.id, name: p.name, total };
-      });
-      this.setState({ profiles });
+  handleTotal = serverProfiles => {
+    const profiles = serverProfiles.map(p => {
+      const total = objectToArray(p.completedChores).reduce(
+        (prev, cur) => prev + cur.value,
+        0
+      );
+      return { id: p.id, name: p.name, total };
     });
-  }
+    this.setState({ profiles });
+  };
 
   render() {
     const { profiles } = this.state;
     const { selectProfile } = this.props;
     const options = [{ id: 'admin', name: 'Parent' }, ...profiles];
     return (
-      <React.Fragment>
-        <Header />
-        <ProfileList>
-          {options.map(p => (
-            <Profile key={p.id} onClick={() => selectProfile(p)}>
-              <span style={{ textAlign: 'center' }}>{p.name}</span>
-              <span>{printAmount(p.total)}</span>
-            </Profile>
-          ))}
-        </ProfileList>
-      </React.Fragment>
+      <FirebaseQuery on toArray path="profiles" onChange={this.handleTotal}>
+        {(_, loading) => {
+          if (loading) return <Loading />;
+
+          return (
+            <ProfileList>
+              {options.map(p => (
+                <Profile key={p.id} onClick={() => selectProfile(p)}>
+                  <span style={{ textAlign: 'center' }}>{p.name}</span>
+                  <span>{printAmount(p.total)}</span>
+                </Profile>
+              ))}
+            </ProfileList>
+          );
+        }}
+      </FirebaseQuery>
     );
   }
 }
 
-export default withUser(ProfileSelect);
+export default ProfileSelect;
 
 const ProfileList = styled.div`
   padding: 0.5rem;

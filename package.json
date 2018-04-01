@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "date-fns": "^1.29.0",
-    "firebase": "^4.8.2",
+    "fire-fetch": "^0.1.0",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",

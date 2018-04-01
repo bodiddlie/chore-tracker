@@ -1,58 +1,26 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import Header from '../header';
 import Chores from './chores';
 import AddChore from './add-chore';
 import Profiles from './profiles';
-import { withUser } from '../user';
-import { db } from '../firebase';
-import { objectToArray } from '../util';
 
-class Admin extends React.Component {
-  state = {
-    total: 0,
-  };
-
-  componentDidMount() {
-    const { user } = this.props;
-    this.ref = db
-      .ref(`/families/${user.uid}/completedChores`)
-      .orderByChild('paid')
-      .equalTo(false);
-    this.ref.on('value', snapshot => {
-      const completed = objectToArray(snapshot.val());
-      const total = completed.reduce((prev, cur) => {
-        return prev + cur.value;
-      }, 0);
-      this.setState({ total });
-    });
-  }
-
-  componentWillUnmount() {
-    this.ref.off();
-  }
-
-  render() {
-    const { profiles } = this.props;
-
-    return (
-      <Grid>
-        <Header />
-        <Desktop>
-          <ChoreContainer>
-            <Heading>Chores</Heading>
-            <AddChore />
-            <Chores />
-          </ChoreContainer>
-          <Profiles profiles={profiles} />
-        </Desktop>
-      </Grid>
-    );
-  }
+function Admin({ profiles }) {
+  return (
+    <Grid>
+      <Desktop>
+        <ChoreContainer>
+          <Heading>Chores</Heading>
+          <AddChore />
+          <Chores />
+        </ChoreContainer>
+        <Profiles profiles={profiles} />
+      </Desktop>
+    </Grid>
+  );
 }
 
-export default withUser(Admin);
+export default Admin;
 
 const Grid = styled.div`
   display: grid;
