@@ -88,7 +88,7 @@ class ProfileList extends React.Component {
         path="completedChores"
         orderByChild="paid"
         equalTo={false}
-        on
+        updateOnValue
         toArray
       >
         {completed => {
